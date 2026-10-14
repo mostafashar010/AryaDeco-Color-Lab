@@ -1,10 +1,10 @@
 import { decodeMarker, sampleMarker, type PixelImage, type Rect } from './marker';
-import type { Region } from './sampling';
+import { bounds, type Point, type Region } from './sampling';
 import { detectSwatchLayout } from './swatchDetection';
 import { detectNeutralCards } from './neutralCards';
 import {selectResponseWitness,type ResponseWitness} from './responseTracking';
 
-export type AutoRegion = Region & { source: 'autoDetected'; confidence: number };
+export type AutoRegion = Region & { source: 'autoDetected'; confidence: number; geometryStatus?: 'candidate' | 'full'; clipped?: boolean };
 export type LiveScene = {
   status: 'ready' | 'needsFraming' | 'ambiguous';
   displayRegion?: AutoRegion;
@@ -198,10 +198,10 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
           const boundedStart = b.x - (d.x - b.x) / 2;
           if (borderedMarker(boundedStart, y, (d.x - b.x) / 2)) continue;
         }
-       if (cell < 2 || markerWidth * sx < 112 || (tolerant?a.length<cell-1:Math.abs(a.length-cell)>1) || Math.abs(b.length - c.length) > 1 || d.length < cell - 1 || a.x <= 0 || b.x-cell+markerWidth >= width) {rejectMarker('sentinelShapeOrResolution');continue;}
-       if(tolerant){
-         cell=(d.x-b.x)/2;start=b.x-cell;markerWidth=cell*28;
-         if(markerWidth*sx<112||start<=0||start+markerWidth>=width){rejectMarker('sentinelShapeOrResolution');continue;}
+       if (cell < 2 || markerWidth * sx < 70 || (tolerant?a.length<cell-1:Math.abs(a.length-cell)>1) || Math.abs(b.length - c.length) > (tolerant ? Math.max(2, cell * 0.6) : 1) || d.length < cell - 1 || a.x <= 0 || b.x-cell+markerWidth >= width) {rejectMarker('sentinelShapeOrResolution');continue;}
+        if(tolerant){
+          cell=(d.x-b.x)/2;start=b.x-cell;markerWidth=cell*28;
+          if(markerWidth*sx<70||start<=0||start+markerWidth>=width){rejectMarker('sentinelShapeOrResolution');continue;}
          if(markers.some(m=>y*sy>=m.rect.y&&y*sy<m.rect.y+m.rect.height&&start*sx<m.rect.x+m.rect.width&&(start+markerWidth)*sx>m.rect.x))continue;
          const cellsAt=(yy:number)=>Array.from({length:28},(_,index)=>{
            const sum=[0,0,0];let count=0;
@@ -219,7 +219,7 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
          while(bottom<height&&supported(bottom))bottom++;
          if(top===0||bottom===height||(bottom-top)*sy<4||bottom-top>markerWidth/3){rejectMarker('stripHeightSupport');continue;}
          const rect={x:start*sx,y:top*sy,width:markerWidth*sx,height:(bottom-top)*sy};
-         try{if(decodeMarker(sampleMarker(image,rect))!==sequence){rejectMarker('nativeSequenceMismatch');continue;}}catch{rejectMarker('nativeCellAmbiguity');continue;}
+          try{if(decodeMarker(sampleMarker(image,rect,{purpose:'analysisGeometry'}))!==sequence){rejectMarker('nativeSequenceMismatch');continue;}}catch{rejectMarker('nativeCellAmbiguity');continue;}
          if(!markers.some(m=>Math.abs(m.rect.x-rect.x)<2&&Math.abs(m.rect.y-rect.y)<4)){markers.push({rect,sequence});if(markers.length>=32)break;}
          continue;
        }
@@ -478,7 +478,22 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
   const displayLeft = Math.max(0, Math.min(mx, patch.x) - 4), displayRight = Math.min(width, Math.max(mx + mw, patch.x + patch.width) + 4);
   const displayExclusion: [number, number][] = [[displayLeft * sx, Math.max(0, patch.y - 8) * sy], [displayRight * sx, Math.max(0, patch.y - 8) * sy], [displayRight * sx, Math.min(height, my + marker.rect.height / sy + 8) * sy], [displayLeft * sx, Math.min(height, my + marker.rect.height / sy + 8) * sy]];
   const visibleLayout = detectSwatchLayout(image, [...cardExclusions, displayExclusion]);
-  result.fabricRegions = visibleLayout.fabricRegions;
+  const phoneIsRight = mx > width / 2;
+  result.fabricRegions = visibleLayout.fabricRegions.flatMap(region => {
+    const poly = region.polygon;
+    const b = bounds(poly);
+    // If the swatch spans right across the phone (e.g. full-width carpet detection):
+    if (phoneIsRight && b.x < displayLeft * sx && b.x + b.width > displayLeft * sx) {
+      const right = displayLeft * sx - 4;
+      if (right <= b.x + 10) return [];
+      return [{ ...region, polygon: [[b.x, poly[0][1]], [right, poly[0][1]], [right, poly[2][1]], [b.x, poly[2][1]]] as Point[] }];
+    } else if (!phoneIsRight && b.x < displayRight * sx && b.x + b.width > displayRight * sx) {
+      const left = displayRight * sx + 4;
+      if (b.x + b.width <= left + 10) return [];
+      return [{ ...region, polygon: [[left, poly[0][1]], [b.x + b.width, poly[0][1]], [b.x + b.width, poly[2][1]], [left, poly[2][1]]] as Point[] }];
+    }
+    return [region];
+  });
   if (visibleLayout.status === 'ambiguous') { result.status = 'ambiguous'; evidence.reason = 'multipleBandStacks'; result.nextAction = 'چند مجموعهٔ نوار دیده شد؛ فقط یک کالیته را در قاب بگذارید.'; return result; }
   const outside = (x: number, y: number) => !(x >= displayLeft && x <= displayRight && y >= patch.y - 8 && y <= my + marker.rect.height / sy + 8);
   const flat: { rect: Rect; color: number[] }[] = [];
@@ -540,7 +555,7 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
     result.status = 'ready';
     result.nextAction = 'نمایشگر و نوارهای پارچه پیدا شدند؛ قاب را ثابت نگه دارید. هویت کارت مرجع هنوز نامعلوم است.';
   } else result.nextAction = 'پارچه را کنار نمایشگر، کامل و صاف در قاب بگذارید؛ نوارها باید از حاشیه و پس‌زمینه جدا دیده شوند.';
-  if (result.neutralCandidates.length && options.requireReferenceIdentity !== false) {
+  if (result.neutralCandidates.length && options.requireReferenceIdentity !== false && options.displayLayout !== 'liveBands') {
     result.status = 'ambiguous';
     result.nextAction = 'سطح خنثی دیده شد، اما هویت مرجع از تصویر معلوم نیست؛ تطبیق کارت فقط با چیدمان مرجع ثبت‌شده ممکن است.';
   }

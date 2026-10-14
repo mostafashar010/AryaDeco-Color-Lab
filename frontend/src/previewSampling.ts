@@ -52,7 +52,7 @@ export function sampleScreenBands(image:PixelImage,screen:Region,bands:{id:strin
   return inspectScreenBands(image,screen,bands).flatMap(band=>band.rgb&&!band.reasons.length?[{id:band.id,rgb:band.rgb,validPixels:band.validPixels,validBlocks:band.validBlocks,blockSpread:band.blockSpread,clippedRate:band.clippedRate}]:[]);
 }
 
-export function samplePreviewBands(image:PixelImage,regions:Region[],screen?:Region){
+export function samplePreviewBands(image:PixelImage,regions:Region[],screen?:Region,neutralReferenceRgb?:[number,number,number]){
   const warnings=['uncalibratedPreview','cameraControlsUnknown','orderedPreview'];
   const targetRejectionReasons:ScreenSampleReason[]=[];
   const bands:{id:string;previewRgb:[number,number,number];top:number;bottom:number}[]=[];
@@ -60,7 +60,7 @@ export function samplePreviewBands(image:PixelImage,regions:Region[],screen?:Reg
   const scale=image.data instanceof Uint8ClampedArray?255:1;
   for(const region of [...regions].sort((a,b)=>a.order-b.order).slice(0,32)){
     const b=bounds(region.polygon);if(b.width<8||b.height<8)continue;
-    const channels:number[][]=[[],[],[]];let rejected=0,total=0,shadow=0,highlight=0,invalid=0;
+    const pixels:{r:number;g:number;b:number;lum:number}[]=[];let rejected=0,total=0,shadow=0,highlight=0,invalid=0;
     for(let y=b.y+.5;y<b.y+b.height;y+=Math.max(1,b.height/24))for(let x=b.x+.5;x<b.x+b.width;x+=Math.max(1,b.width/32)){
       if(x<0||y<0||x>=image.width||y>=image.height||!contains([x,y],region.polygon)||region.exclusions.some(p=>contains([x,y],p)))continue;
       total++;const index=(Math.floor(y)*image.width+Math.floor(x))*4;const values=[0,1,2].map(c=>Number(image.data[index+c])/scale);
@@ -68,19 +68,36 @@ export function samplePreviewBands(image:PixelImage,regions:Region[],screen?:Reg
       if(malformed)invalid++;if(bright)highlight++;
       if(malformed||bright){rejected++;continue;}
       if(values.some(value=>value<=1/255))shadow++;
-      values.forEach((value,c)=>channels[c].push(value));
+      const lum=values[0]*0.2126+values[1]*0.7152+values[2]*0.0722;
+      pixels.push({r:values[0],g:values[1],b:values[2],lum});
     }
-    if(channels[0].length<24||rejected/Math.max(total,1)>.1)continue;
-    if(shadow/channels[0].length>.02)targetRejectionReasons.push('cameraShadowClipped');
-    if(highlight/Math.max(total,1)>.02)targetRejectionReasons.push('cameraHighlightClipped');
+    if(pixels.length<16||rejected/Math.max(total,1)>.35)continue;
+    if(shadow/pixels.length>.02)targetRejectionReasons.push('cameraShadowClipped');
+    if(highlight/Math.max(total,1)>.05)targetRejectionReasons.push('cameraHighlightClipped');
     if(invalid/Math.max(total,1)>.02)targetRejectionReasons.push('invalidImage');
-    const rgb=channels.map(values=>{values.sort((a,b)=>a-b);return values[Math.floor(values.length/2)];}) as [number,number,number];
+
+    // Filter out specular sheen highlights (top 20%) and deep crease shadows (bottom 10%)
+    pixels.sort((p1,p2)=>p1.lum-p2.lum);
+    const lowIndex=Math.floor(pixels.length*0.1);
+    const highIndex=Math.max(lowIndex+1,Math.floor(pixels.length*0.8));
+    const diffuse=pixels.slice(lowIndex,highIndex);
+    const med=(arr:number[])=>{arr.sort((c1,c2)=>c1-c2);return arr[Math.floor(arr.length/2)];};
+    let rgb:[number,number,number]=[med(diffuse.map(p=>p.r)),med(diffuse.map(p=>p.g)),med(diffuse.map(p=>p.b))];
+
+    // Photometric white-balance normalization if reference card is provided:
+    if(neutralReferenceRgb){
+      const meanNeutral=(neutralReferenceRgb[0]+neutralReferenceRgb[1]+neutralReferenceRgb[2])/3;
+      if(meanNeutral>0.08&&neutralReferenceRgb[0]>0.03&&neutralReferenceRgb[1]>0.03&&neutralReferenceRgb[2]>0.03){
+        const gain=[meanNeutral/neutralReferenceRgb[0],meanNeutral/neutralReferenceRgb[1],meanNeutral/neutralReferenceRgb[2]];
+        rgb=[Math.min(1,Math.max(0,rgb[0]*gain[0])),Math.min(1,Math.max(0,rgb[1]*gain[1])),Math.min(1,Math.max(0,rgb[2]*gain[2]))];
+      }
+    }
     bands.push({id:region.id,previewRgb:rgb,top:0,bottom:1});
   }
   if(screen){
     const aperture=bounds(screen.polygon);
     const aligned=bands.flatMap(band=>{const region=regions.find(r=>r.id===band.id)!;const b=bounds(region.polygon);const top=Math.max(0,(b.y-aperture.y)/aperture.height),bottom=Math.min(1,(b.y+b.height-aperture.y)/aperture.height);return bottom>top?[{...band,top,bottom}]:[];});
-    return{bands:aligned,mapping:'screenAligned' as const,warnings:['uncalibratedPreview','cameraControlsUnknown','screenAlignmentUncertain'],targetRejectionReasons:[...new Set(targetRejectionReasons)]};
+    if(aligned.length===bands.length)return{bands:aligned,mapping:'screenAligned' as const,warnings:['uncalibratedPreview','cameraControlsUnknown','screenAlignmentUncertain'],targetRejectionReasons:[...new Set(targetRejectionReasons)]};
   }
   bands.forEach((band,i)=>{band.top=i/bands.length;band.bottom=(i+1)/bands.length;});
   return{bands,mapping:'orderedPreview' as const,warnings,targetRejectionReasons:[...new Set(targetRejectionReasons)]};
