@@ -346,10 +346,19 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
     }
     return support >= 12;
   };
+  const isLivePreview = options.displayLayout === 'liveBands';
+  const maxRightFactor = isLivePreview ? 1.35 : 1.1;
+  const maxWidthFactor = isLivePreview ? 1.35 : 1.2;
+  const maxGapFactor = isLivePreview ? 0.45 : 0.3;
+
+  const rawSegments: { rect: Rect; closedTop: boolean; closedBot: boolean }[] = [];
   const finish = () => {
     if (aperture) {
       const rect = aperture.rect;
-      if (rect.y > Math.max(1, Math.floor(my - mw * 2.5)) && rect.width >= mw * 0.6 && rect.height >= mw * 0.25 && my - rect.y - rect.height < mw * 0.3 && closed(rect.y, rect.x, rect.x + rect.width) && closed(rect.y + rect.height, rect.x, rect.x + rect.width)) {
+      if (rect.y > Math.max(1, Math.floor(my - mw * 2.5)) && rect.width >= mw * 0.6 && rect.height >= 8) {
+        rawSegments.push({ rect, closedTop: closed(rect.y, rect.x, rect.x + rect.width), closedBot: closed(rect.y + rect.height, rect.x, rect.x + rect.width) });
+      }
+      if (rect.y > Math.max(1, Math.floor(my - mw * 2.5)) && rect.width >= mw * 0.6 && rect.height >= mw * 0.25 && my - rect.y - rect.height < mw * maxGapFactor && closed(rect.y, rect.x, rect.x + rect.width) && closed(rect.y + rect.height, rect.x, rect.x + rect.width)) {
         let feedbackSafe = false;
         // A color band's own boundary cannot prove the full screen footprint.
         // Require the same separately bounded rim on all four observed sides.
@@ -414,9 +423,9 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
   };
   for (let y = Math.max(1, Math.floor(my - mw * 2.5)); y < my; y++) {
     let left = -1, right = -1;
-    for (let x = Math.min(width - 1, Math.floor(mx + mw * 0.25)); x >= Math.max(1, Math.floor(mx - mw * 0.1)); x--) if (sustainedSide(x, y)) { left = x; break; }
-    for (let x = Math.max(1, Math.ceil(mx + mw * 0.75)); x < Math.min(width, mx + mw * 1.1); x++) if (sustainedSide(x, y)) { right = x; break; }
-    if (left <= 0 || right >= width || right - left < mw * 0.6 || right - left > mw * 1.2) { finish(); continue; }
+    for (let x = Math.min(width - 1, Math.floor(mx + mw * 0.25)); x >= Math.max(1, Math.floor(mx - mw * 0.15)); x--) if (sustainedSide(x, y)) { left = x; break; }
+    for (let x = Math.max(1, Math.ceil(mx + mw * 0.75)); x < Math.min(width, mx + mw * maxRightFactor); x++) if (sustainedSide(x, y)) { right = x; break; }
+    if (left <= 0 || right >= width || right - left < mw * 0.6 || right - left > mw * maxWidthFactor) { finish(); continue; }
     if (aperture && Math.abs(aperture.left - left) <= 3 && Math.abs(aperture.right - right) <= 3) {
       // Intersect the side traces, rather than expanding into a tilted bezel.
       const x = Math.max(aperture.rect.x, left), end = Math.min(aperture.rect.x + aperture.rect.width, right);
@@ -426,6 +435,19 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
     } else { finish(); aperture = { rect: { x: left, y, width: right - left, height: 1 }, left, right, minLeft: left, maxRight: right }; }
   }
   finish();
+  if (patches.length === 0 && isLivePreview) {
+    const firstTop = rawSegments.find(s => s.closedTop);
+    const lastBot = [...rawSegments].reverse().find(s => s.closedBot && my - s.rect.y - s.rect.height < mw * maxGapFactor);
+    if (firstTop && lastBot && lastBot.rect.y + lastBot.rect.height > firstTop.rect.y) {
+      const y = firstTop.rect.y;
+      const h = (lastBot.rect.y + lastBot.rect.height) - y;
+      const x = Math.max(firstTop.rect.x, lastBot.rect.x);
+      const w = Math.min(firstTop.rect.x + firstTop.rect.width, lastBot.rect.x + lastBot.rect.width) - x;
+      if (h >= mw * 0.4 && w >= mw * 0.5) {
+        patches.push({ rect: { x, y, width: w, height: h }, feedbackSafe: false });
+      }
+    }
+  }
   if (patches.length !== 1) {
     result.status = patches.length > 1 ? 'ambiguous' : 'needsFraming';
     result.nextAction = 'سطح رنگی بزرگ بالای نشانگر باید صاف، کامل و بدون زاویه یا بازتاب در قاب دیده شود.';
