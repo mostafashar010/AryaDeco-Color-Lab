@@ -281,7 +281,7 @@ export function detectSwatchLayout(image: PixelImage, exclusions: Point[][] = []
     if (previous && band.top - previous.bottom <= 6 && Math.abs(band.left - previous.left) < 12 && Math.abs(band.right - previous.right) < 12) groups.at(-1)!.push(band);
     else groups.push([band]);
   }
-   const stacks = groups.filter(group => group.length >= (fullWidth ? 4 : 2));
+   const stacks = groups.filter(group => group.length >= 2);
   if (stacks.length > 1 || bands.length > 30) { result.status = 'ambiguous'; result.evidence.reason = 'multipleBandStacks'; return result; }
   if (!stacks.length) return result;
   if (stacks[0].some(band => band.darkCandidate)) result.evidence.limitations.push('Bounded dark-band geometry only; black fabric, clipped pixels and shadow remain indistinguishable. Preview only, not true-color evidence.');

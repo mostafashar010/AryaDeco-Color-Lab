@@ -40,7 +40,7 @@ export function App({ initialJoin }: { initialJoin: Credentials | null }) {
     let lock: WakeLockSentinel | undefined;
     const acquire = async () => {
       if (document.visibilityState !== 'visible' || !navigator.wakeLock) return;
-      try { lock = await navigator.wakeLock.request('screen'); wakeHeld.current = true; displayCapabilities(); lock.addEventListener('release', () => { wakeHeld.current = false; displayCapabilities(); pause('wake_lock_released'); }); }
+      try { lock = await navigator.wakeLock.request('screen'); wakeHeld.current = true; displayCapabilities(); lock.addEventListener('release', () => { wakeHeld.current = false; displayCapabilities(); if (document.visibilityState === 'visible') void acquire(); else pause('wake_lock_released'); }); }
       catch { setError('قفل بیداری در دسترس نیست؛ روشن‌ماندن صفحه تضمین نمی‌شود.'); }
     }; void acquire();
     return () => { socket.stop(); abortRef.current?.abort(); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('pagehide', pagehide); void lock?.release(); };
