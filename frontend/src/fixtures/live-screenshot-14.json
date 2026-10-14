@@ -1,0 +1,44 @@
+{
+  "sourceName": "photo_2026-10-14_01-41-14.jpg",
+  "sourceSha256": "cc8516b9c24dd6c6643db4a3f9a3e0b0f47e139a245f819ca9b8a2a83a0f92d1",
+  "sourceSize": [
+    591,
+    1280
+  ],
+  "cameraCrop": [
+    48,
+    560,
+    543,
+    1055
+  ],
+  "size": [
+    495,
+    495
+  ],
+  "pixelSha256": "311d907c0945f351b181dbb53eaee4ddbd6a61bf54c7590b4534396da7ed442a",
+  "annotationAuthor": "AI draft",
+  "humanConfirmed": false,
+  "physicalBandCount": null,
+  "physicalColorTruth": false,
+  "uncertainty": "Approximate object outlines; hidden edges and physical band count are unknown. Screenshot 14 contains old preview outlines, not ground truth. JPEG camera ROI is diagnostic encoded RGB only; no ICC calibration or reference XYZ.",
+  "objectExclusions": [
+    [
+      [
+        0,
+        0
+      ],
+      [
+        48,
+        0
+      ],
+      [
+        21,
+        495
+      ],
+      [
+        0,
+        495
+      ]
+    ]
+  ]
+}

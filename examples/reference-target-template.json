@@ -1,0 +1,14 @@
+{
+  "id": "operator-card-id",
+  "label": "Enter the actual physical reference card",
+  "source": "Enter the verified manufacturer or measurement source",
+  "version": "Enter the actual source revision",
+  "valueType": "Lab",
+  "referenceWhite": "D50",
+  "observer": "2",
+  "xyzScale": 1,
+  "validity": "unverified",
+  "patches": [],
+  "geometry": null,
+  "health": null
+}

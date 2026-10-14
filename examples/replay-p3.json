@@ -1,0 +1,1295 @@
+{
+  "version": 1,
+  "kind": "experimental",
+  "exportKind": "experimental",
+  "storage": "ephemeral",
+  "independentValidationStatus": "notTested",
+  "validationReports": [],
+  "sessionId": "id1Mokt77Ka-JiQmPUxAl0aR",
+  "mode": "replay",
+  "state": "reference",
+  "profileVersion": 0,
+  "capabilities": {},
+  "conditions": {
+    "purpose": "actual-image replay, not physical validation"
+  },
+  "references": null,
+  "cameraProfile": null,
+  "displayProfile": null,
+  "measurements": [
+    {
+      "id": "NLv3VnXMZK2IZ29Z",
+      "region": {
+        "id": "swatch-01",
+        "label": "AI interior 01",
+        "order": 0,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.11
+          ],
+          [
+            0.77,
+            0.11
+          ],
+          [
+            0.77,
+            0.155
+          ],
+          [
+            0.25,
+            0.155
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "accepted",
+      "quality": {
+        "status": "accepted",
+        "warnings": [],
+        "validPixels": 30981,
+        "excludedRate": 0.0,
+        "blockSpread": 0.10684917437312974,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.5587782784130854,
+        0.5003260724144781,
+        0.45152529844950734
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:35.883792+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "exploratory",
+      "displayStatus": "notMatched",
+      "catalogColor": {
+        "rgb": [
+          0.7728193830361504,
+          0.7355717035584527,
+          0.7024779522646705
+        ],
+        "hex": "#C5BCB3",
+        "unclippedRgb": [
+          0.7728193830361504,
+          0.7355717035584527,
+          0.7024779522646705
+        ],
+        "outOfGamut": false,
+        "xyz": [
+          0.4908354307756305,
+          0.5092322505250918,
+          0.49962721135954896
+        ],
+        "lab": [
+          76.63247958052466,
+          1.8700832223633723,
+          5.4600301427437214
+        ],
+        "referenceWhite": "D65",
+        "physicallyVerified": false
+      },
+      "catalogHexSrgb": "#C5BCB3",
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "AhvAGXf2x-hturd6",
+      "region": {
+        "id": "swatch-02",
+        "label": "AI interior 02",
+        "order": 1,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.183
+          ],
+          [
+            0.77,
+            0.183
+          ],
+          [
+            0.77,
+            0.24
+          ],
+          [
+            0.25,
+            0.24
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "accepted",
+      "quality": {
+        "status": "accepted",
+        "warnings": [],
+        "validPixels": 39512,
+        "excludedRate": 0.0,
+        "blockSpread": 0.10856732619986903,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.5784114577846124,
+        0.4821106175867822,
+        0.39971187530084346
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:35.915992+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "exploratory",
+      "displayStatus": "notMatched",
+      "catalogColor": {
+        "rgb": [
+          0.7848166798177202,
+          0.723449151640726,
+          0.6649688901288071
+        ],
+        "hex": "#C8B8AA",
+        "unclippedRgb": [
+          0.7848166798177202,
+          0.723449151640726,
+          0.6649688901288071
+        ],
+        "outOfGamut": false,
+        "xyz": [
+          0.48306708446797947,
+          0.496639376522606,
+          0.4485852250428225
+        ],
+        "lab": [
+          75.86252372915804,
+          3.061300211889717,
+          9.57506737220295
+        ],
+        "referenceWhite": "D65",
+        "physicallyVerified": false
+      },
+      "catalogHexSrgb": "#C8B8AA",
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "f1951LsriMpMUh0D",
+      "region": {
+        "id": "swatch-03",
+        "label": "AI interior 03",
+        "order": 2,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.27
+          ],
+          [
+            0.77,
+            0.27
+          ],
+          [
+            0.77,
+            0.329
+          ],
+          [
+            0.25,
+            0.329
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region"
+        ],
+        "validPixels": 40410,
+        "excludedRate": 0.0,
+        "blockSpread": 0.16728858033529598,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.5745904038450302,
+        0.4289667798276791,
+        0.27969591367950863
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:35.955503+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "zRuaG8gArsfC23Qe",
+      "region": {
+        "id": "swatch-04",
+        "label": "AI interior 04",
+        "order": 3,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.358
+          ],
+          [
+            0.77,
+            0.358
+          ],
+          [
+            0.77,
+            0.407
+          ],
+          [
+            0.25,
+            0.407
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region"
+        ],
+        "validPixels": 33675,
+        "excludedRate": 0.0,
+        "blockSpread": 0.2221567439339604,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.5178025284436109,
+        0.3662314539229364,
+        0.25380223242389677
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:35.984583+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "QXNjh3OcHiIcPFd-",
+      "region": {
+        "id": "swatch-05",
+        "label": "AI interior 05",
+        "order": 4,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.44
+          ],
+          [
+            0.77,
+            0.44
+          ],
+          [
+            0.77,
+            0.495
+          ],
+          [
+            0.25,
+            0.495
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region"
+        ],
+        "validPixels": 37716,
+        "excludedRate": 0.0,
+        "blockSpread": 0.3060704774706412,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.5649776898883806,
+        0.369949806875806,
+        0.23343889110865615
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:36.013519+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "mFkc5kQOP7YR6F03",
+      "region": {
+        "id": "swatch-06",
+        "label": "AI interior 06",
+        "order": 5,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.527
+          ],
+          [
+            0.77,
+            0.527
+          ],
+          [
+            0.77,
+            0.576
+          ],
+          [
+            0.25,
+            0.576
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region"
+        ],
+        "validPixels": 34124,
+        "excludedRate": 0.0,
+        "blockSpread": 0.2703930601966504,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.514276814317835,
+        0.2791518320661734,
+        0.13181096487826216
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:36.041806+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "ijGTNNG1bVwky_Q3",
+      "region": {
+        "id": "swatch-07",
+        "label": "AI interior 07",
+        "order": 6,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.612
+          ],
+          [
+            0.77,
+            0.612
+          ],
+          [
+            0.77,
+            0.657
+          ],
+          [
+            0.25,
+            0.657
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region"
+        ],
+        "validPixels": 30981,
+        "excludedRate": 0.0,
+        "blockSpread": 0.2562094467583575,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 24,
+        "clippedRate": 0.0007746683451147477,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.6783552457253059,
+        0.38097056925599754,
+        0.06797716440736531
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:36.066936+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "UT0Kx4u6rc1by5AU",
+      "region": {
+        "id": "swatch-08",
+        "label": "AI interior 08",
+        "order": 7,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.694
+          ],
+          [
+            0.77,
+            0.694
+          ],
+          [
+            0.77,
+            0.742
+          ],
+          [
+            0.25,
+            0.742
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "accepted",
+      "quality": {
+        "status": "accepted",
+        "warnings": [],
+        "validPixels": 33226,
+        "excludedRate": 0.0,
+        "blockSpread": 0.1340682947757894,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 4,
+        "clippedRate": 0.00012038764822729188,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.5121711337841746,
+        0.1373237491988649,
+        0.02325433812922741
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:36.086514+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "exploratory",
+      "displayStatus": "notMatched",
+      "catalogColor": {
+        "rgb": [
+          0.7433170725272786,
+          0.4062961336895414,
+          0.1651046000973628
+        ],
+        "hex": "#BE682A",
+        "unclippedRgb": [
+          0.7433170725272786,
+          0.4062961336895414,
+          0.1651046000973628
+        ],
+        "outOfGamut": false,
+        "xyz": [
+          0.2645164466405281,
+          0.2087959895136687,
+          0.04837295745598763
+        ],
+        "lab": [
+          52.81747072206272,
+          29.818132981989155,
+          47.82135567666875
+        ],
+        "referenceWhite": "D65",
+        "physicallyVerified": false
+      },
+      "catalogHexSrgb": "#BE682A",
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "7emQsIWYu5p6Our7",
+      "region": {
+        "id": "swatch-09",
+        "label": "AI interior 09",
+        "order": 8,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.775
+          ],
+          [
+            0.77,
+            0.775
+          ],
+          [
+            0.77,
+            0.827
+          ],
+          [
+            0.25,
+            0.827
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region"
+        ],
+        "validPixels": 35920,
+        "excludedRate": 0.0,
+        "blockSpread": 0.18813661488010391,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.3581558293223542,
+        0.43114077075169305,
+        0.4430795336977986
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:36.104591+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "T6Y3bVjDeGUjTZXG",
+      "region": {
+        "id": "swatch-10",
+        "label": "AI interior 10",
+        "order": 9,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.86
+          ],
+          [
+            0.77,
+            0.86
+          ],
+          [
+            0.77,
+            0.901
+          ],
+          [
+            0.25,
+            0.901
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region"
+        ],
+        "validPixels": 28287,
+        "excludedRate": 0.0,
+        "blockSpread": 0.1813264079865355,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.3717376838127569,
+        0.4209139175654514,
+        0.20083913126496114
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:36.122203+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    },
+    {
+      "id": "oVpgHrNGelDLO7zW",
+      "region": {
+        "id": "swatch-11",
+        "label": "AI interior 11",
+        "order": 10,
+        "mode": "bands",
+        "polygon": [
+          [
+            0.25,
+            0.938
+          ],
+          [
+            0.77,
+            0.938
+          ],
+          [
+            0.77,
+            0.976
+          ],
+          [
+            0.25,
+            0.976
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.0347,
+              0.0
+            ],
+            [
+              0.1887,
+              0.0
+            ],
+            [
+              0.1887,
+              1.0
+            ],
+            [
+              0.0347,
+              1.0
+            ]
+          ]
+        ],
+        "background": null,
+        "layers": null,
+        "direction": "horizontal",
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "accepted",
+      "quality": {
+        "status": "accepted",
+        "warnings": [],
+        "validPixels": 26042,
+        "excludedRate": 0.0,
+        "blockSpread": 0.10898601268487992,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 20,
+        "clippedRate": 0.0007679901697258275,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "estimated",
+        "components": [],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.028948550233335472,
+        0.17637504115254335,
+        0.282251555761295
+      ],
+      "sourceColorSpace": "display-p3",
+      "sourceCaptureIds": [
+        "Kln3bnP0Vmem--HuesNotE14"
+      ],
+      "capturedAt": "2026-10-14T17:19:36.138835+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "exploratory",
+      "displayStatus": "notMatched",
+      "catalogColor": {
+        "rgb": [
+          0.1861368781833335,
+          0.45699760525456573,
+          0.5678033450446154
+        ],
+        "hex": "#2F7591",
+        "unclippedRgb": [
+          0.1861368781833335,
+          0.45699760525456573,
+          0.5678033450446154
+        ],
+        "outOfGamut": false,
+        "xyz": [
+          0.12594805165409448,
+          0.15266988941628773,
+          0.28987176214168464
+        ],
+        "lab": [
+          45.99772968709972,
+          -12.31985914920436,
+          -21.758904556691093
+        ],
+        "referenceWhite": "D65",
+        "physicallyVerified": false
+      },
+      "catalogHexSrgb": "#2F7591",
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": null,
+        "layers": null
+      }
+    }
+  ],
+  "currentPatch": null,
+  "paused": true,
+  "pauseReason": "awaiting_devices",
+  "diagnosticId": "test-0632f2b1e37daa04adb3f075",
+  "diagnosticsEnabled": true,
+  "captures": [
+    {
+      "id": "Kln3bnP0Vmem--HuesNotE14",
+      "captureId": "Kln3bnP0Vmem--HuesNotE14",
+      "width": 864,
+      "height": 1536,
+      "metadata": {
+        "colorSpace": "srgb",
+        "sourceColorSpace": "display-p3",
+        "iccDescription": "Display P3 Gamut with sRGB Transfer",
+        "encoding": "encoded",
+        "iccApplied": true,
+        "iccSha256": "13cd371bf631f6ca66043db515ef24d032ba8accf28ee55c34efd3ce764546da",
+        "assumed": false,
+        "exploratory": true,
+        "physicallyVerified": false,
+        "originalSha256": "ae19fc687b927e4af8362add615a6667a14ff5106a628189937811318b92c2e2",
+        "width": 864,
+        "height": 1536,
+        "orientation": 1,
+        "gamutPreserved": true,
+        "sha256": "ae19fc687b927e4af8362add615a6667a14ff5106a628189937811318b92c2e2"
+      },
+      "originalRetained": false,
+      "retention": "ephemeral",
+      "provenance": "explicitUploadApproximateReplay"
+    }
+  ],
+  "neutralCheck": null,
+  "responseProfile": null,
+  "artifactPurpose": "imageReplayOnlyNotPhysicalValidation",
+  "humanAnnotationStatus": "pending",
+  "annotationSource": "AI draft, editable; pending human review"
+}

@@ -1,0 +1,22 @@
+{
+  "sourceFile": "03-user-neutral-cards.jpg",
+  "sourceSha256": "0fdf2da145f02348f042627c96ab22849a20cb3c5c57c61fb9eb0aabb1e40697",
+  "width": 1280,
+  "height": 1280,
+  "coordinateSystem": "originalPixels",
+  "annotationSource": "AI draft geometry from supplied photograph",
+  "humanConfirmed": false,
+  "physicalColorTruth": null,
+  "referenceValues": "unknown",
+  "physicalStandardVerified": false,
+  "cards": [
+    {"observedBrightnessRole": "dark", "approximateOutline": [[417,30],[803,226],[694,461],[313,270]], "approximateCornerHole": {"center": [334,267], "radius": 8}},
+    {"observedBrightnessRole": "middle", "approximateOutline": [[354,489],[775,482],[779,740],[361,756]], "approximateCornerHole": {"center": [756,500], "radius": 8}},
+    {"observedBrightnessRole": "light", "approximateOutline": [[387,858],[798,856],[795,1104],[386,1117]], "approximateCornerHole": {"center": [780,872], "radius": 8}}
+  ],
+  "limitations": [
+    "Approximate AI outlines are not human ground truth; test only conservative interior containment, not claimed segmentation IoU.",
+    "Roles sort observed brightness and do not establish black/gray/white reflectance, brand, 18 percent gray or calibrated RGB/Lab values.",
+    "Visible blue casts remain camera observations; no forced neutralization or full RGB camera matrix is justified by three cards."
+  ]
+}

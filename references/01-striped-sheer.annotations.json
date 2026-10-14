@@ -1,0 +1,10 @@
+{
+  "image": "01-striped-sheer.jpg",
+  "sha256": "ff8ba695559f82d5bf5ec5f9c714488444e4855d8f2a02291f39ab8a6d24d97d",
+  "annotationSource": "AI draft, editable; pending human review",
+  "humanConfirmed": false,
+  "colorGroundTruth": false,
+  "coordinateSpace": "normalized",
+  "limitations": ["No human segmentation ground truth", "No physical color truth", "Patterned sheer transparency and illumination are unverified", "Conservative interior only; not a complete outline", "Visible carpet through sheer remains part of image appearance, not fabric reflectance"],
+  "regions": [{"id":"striped-sheer-interior", "label":"Conservative patterned sheer interior draft", "order":0,"mode":"patterned", "polygon":[[0.38,0.28],[0.72,0.28],[0.72,0.68],[0.38,0.68]],"exclusions":[[[0.62,0.28],[0.72,0.28],[0.72,0.34],[0.62,0.34]],[[0.38,0.63],[0.43,0.63],[0.43,0.68],[0.38,0.68]]],"background":"visible carpet; translucent appearance only","layers":null,"direction":null,"operatorConfirmed":false}]
+}

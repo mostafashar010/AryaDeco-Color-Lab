@@ -1,0 +1,10 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+numpy>=2,<3
+scipy>=1.14,<2
+Pillow>=11,<13
+colour-science>=0.4.6,<0.5
+python-multipart>=0.0.20,<1
+httpx>=0.28,<1
+pytest>=8,<10
+jsonschema>=4,<5

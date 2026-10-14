@@ -1,0 +1,22 @@
+import { test, expect } from '@playwright/test'
+
+test('optional settings persist through reload without storing session credentials', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: 'ایجاد جلسه و شروع', exact: true })).toBeEnabled()
+  const details = page.locator('details').filter({ has: page.getByText('جزئیات شرایط آزمایش (اختیاری)', { exact: true }) })
+  await expect(details).not.toHaveAttribute('open')
+  await page.getByText('جزئیات شرایط آزمایش (اختیاری)', { exact: true }).click()
+  await page.getByLabel('مدل دوربین B', { exact: true }).fill('operator test device')
+  await page.getByRole('button', { name: 'ایجاد جلسه و شروع', exact: true }).click()
+  await expect(page.getByText('دوربین B', { exact: true }).first()).toBeVisible()
+  const saved = await page.evaluate(() => Object.values(localStorage).join(' '))
+  expect(saved).toContain('operator test device')
+  expect(saved).not.toMatch(/cameraToken|displayToken|sessionId|profileVersion/)
+  await page.reload()
+  await expect(page.getByLabel('شرایط امروز را بازبینی کردم', { exact: true })).toBeVisible()
+  await page.getByText('جزئیات شرایط آزمایش (اختیاری)', { exact: true }).click()
+  await expect(page.getByLabel('مدل دوربین B', { exact: true })).toHaveValue('operator test device')
+  await page.getByRole('button', { name: 'فراموش‌کردن تنظیمات این مرورگر', exact: true }).click()
+  await expect(page.getByLabel('مدل دوربین B', { exact: true })).toHaveValue('')
+  await expect(page.getByRole('button', { name: 'ایجاد جلسه و شروع', exact: true })).toBeEnabled()
+})

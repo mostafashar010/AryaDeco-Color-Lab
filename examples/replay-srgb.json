@@ -1,0 +1,368 @@
+{
+  "version": 1,
+  "kind": "experimental",
+  "exportKind": "experimental",
+  "storage": "ephemeral",
+  "independentValidationStatus": "notTested",
+  "validationReports": [],
+  "sessionId": "weP948nb4bFDUh5Ti0oXliY2",
+  "mode": "replay",
+  "state": "reference",
+  "profileVersion": 0,
+  "capabilities": {},
+  "conditions": {
+    "purpose": "actual-image replay, not physical validation"
+  },
+  "references": null,
+  "cameraProfile": null,
+  "displayProfile": null,
+  "measurements": [
+    {
+      "id": "SneaDHjcoQfPNeCx",
+      "region": {
+        "id": "striped-sheer-interior",
+        "label": "Conservative patterned sheer interior draft",
+        "order": 0,
+        "mode": "patterned",
+        "polygon": [
+          [
+            0.38,
+            0.28
+          ],
+          [
+            0.72,
+            0.28
+          ],
+          [
+            0.72,
+            0.68
+          ],
+          [
+            0.38,
+            0.68
+          ]
+        ],
+        "exclusions": [
+          [
+            [
+              0.62,
+              0.28
+            ],
+            [
+              0.72,
+              0.28
+            ],
+            [
+              0.72,
+              0.34
+            ],
+            [
+              0.62,
+              0.34
+            ]
+          ],
+          [
+            [
+              0.38,
+              0.63
+            ],
+            [
+              0.43,
+              0.63
+            ],
+            [
+              0.43,
+              0.68
+            ],
+            [
+              0.38,
+              0.68
+            ]
+          ]
+        ],
+        "background": "visible carpet; translucent appearance only",
+        "layers": null,
+        "direction": null,
+        "operatorConfirmed": false,
+        "selectionMethod": "manual"
+      },
+      "captureQuality": "rejected",
+      "quality": {
+        "status": "rejected",
+        "warnings": [
+          "pattern-or-nonuniform-region",
+          "patterned-requires-operator-review"
+        ],
+        "validPixels": 225086,
+        "excludedRate": 0.0626103614859237,
+        "blockSpread": 0.34863483134921425,
+        "uniqueFrames": 1,
+        "validBlocks": 0,
+        "temporalStd": null,
+        "clippedPixels": 0,
+        "clippedRate": 0.0,
+        "domain": "linear-srgb-camera",
+        "replay": true,
+        "physicallyVerified": false,
+        "representativeStatus": "operatorReviewRequired",
+        "components": [
+          {
+            "id": "component-1",
+            "fraction": 0.3954471949247419,
+            "rgb": [
+              0.5332820044545136,
+              0.5394596730746681,
+              0.5840732437479473
+            ],
+            "catalogPreview": {
+              "rgb": [
+                0.7568662976474966,
+                0.7607718281534059,
+                0.7882321816421382
+              ],
+              "hex": "#C1C2C9",
+              "unclippedRgb": [
+                0.7568662976474966,
+                0.7607718281534059,
+                0.7882321816421382
+              ],
+              "outOfGamut": false,
+              "xyz": [
+                0.5182369223878429,
+                0.5413668167240885,
+                0.6297899521437915
+              ],
+              "lab": [
+                78.5413645982134,
+                0.9722335150154082,
+                -3.624478247578833
+              ],
+              "referenceWhite": "D65",
+              "physicallyVerified": false
+            },
+            "physicallyVerified": false,
+            "operatorConfirmed": false
+          },
+          {
+            "id": "component-2",
+            "fraction": 0.14243065057843016,
+            "rgb": [
+              0.34671189454693546,
+              0.26224340739859364,
+              0.19120058576637175
+            ],
+            "catalogPreview": {
+              "rgb": [
+                0.6235358033934556,
+                0.5490126500330369,
+                0.4745085381122726
+              ],
+              "hex": "#9F8C79",
+              "unclippedRgb": [
+                0.6235358033934556,
+                0.5490126500330369,
+                0.4745085381122726
+              ],
+              "outOfGamut": false,
+              "xyz": [
+                0.27126296336163624,
+                0.275075956749898,
+                0.21970257427739942
+              ],
+              "lab": [
+                59.44124842296431,
+                4.019438826773802,
+                12.772901828131932
+              ],
+              "referenceWhite": "D65",
+              "physicallyVerified": false
+            },
+            "physicallyVerified": false,
+            "operatorConfirmed": false
+          },
+          {
+            "id": "component-3",
+            "fraction": 0.15437243438238588,
+            "rgb": [
+              0.46208411595221244,
+              0.41787084368089283,
+              0.4019729369641454
+            ],
+            "catalogPreview": {
+              "rgb": [
+                0.7098088292535891,
+                0.6784209682186334,
+                0.6666630440071367
+              ],
+              "hex": "#B5ADAA",
+              "unclippedRgb": [
+                0.7098088292535891,
+                0.6784209682186334,
+                0.6666630440071367
+              ],
+              "outOfGamut": false,
+              "xyz": [
+                0.4125317000705422,
+                0.4261246032477217,
+                0.4408286883906122
+              ],
+              "lab": [
+                71.2911454700356,
+                2.3141244158865204,
+                2.556060834240359
+              ],
+              "referenceWhite": "D65",
+              "physicallyVerified": false
+            },
+            "physicallyVerified": false,
+            "operatorConfirmed": false
+          },
+          {
+            "id": "component-4",
+            "fraction": 0.17925115064062694,
+            "rgb": [
+              0.4232762406550773,
+              0.3371532666396123,
+              0.2704957959096089
+            ],
+            "catalogPreview": {
+              "rgb": [
+                0.6823591621912923,
+                0.615677697321666,
+                0.5568608647189988
+              ],
+              "hex": "#AE9D8E",
+              "unclippedRgb": [
+                0.6823591621912923,
+                0.615677697321666,
+                0.5568608647189988
+              ],
+              "outOfGamut": false,
+              "xyz": [
+                0.3439352498216278,
+                0.3506542130688696,
+                0.30548413670931385
+              ],
+              "lab": [
+                65.79956791847906,
+                3.7176385934938883,
+                10.112758076850836
+              ],
+              "referenceWhite": "D65",
+              "physicallyVerified": false
+            },
+            "physicallyVerified": false,
+            "operatorConfirmed": false
+          },
+          {
+            "id": "component-5",
+            "fraction": 0.12837417589252395,
+            "rgb": [
+              0.28744755937830985,
+              0.22322248816308946,
+              0.1980684553320281
+            ],
+            "catalogPreview": {
+              "rgb": [
+                0.5725551341080842,
+                0.5097981557482315,
+                0.4823519642541673
+              ],
+              "hex": "#92827B",
+              "unclippedRgb": [
+                0.5725551341080842,
+                0.5097981557482315,
+                0.4823519642541673
+              ],
+              "outOfGamut": false,
+              "xyz": [
+                0.2341091457003521,
+                0.23506331558758672,
+                0.22043398712190806
+              ],
+              "lab": [
+                55.590095501121425,
+                4.845921129269293,
+                6.002961167010357
+              ],
+              "referenceWhite": "D65",
+              "physicallyVerified": false
+            },
+            "physicallyVerified": false,
+            "operatorConfirmed": false
+          }
+        ],
+        "sharpnessStatus": "notAssessed"
+      },
+      "linearRgb": [
+        0.45641886994919073,
+        0.40196462908700653,
+        0.3762586110308344
+      ],
+      "sourceColorSpace": "srgb",
+      "sourceCaptureIds": [
+        "fPt0bM-zKdlCnp_C5Eor75R7"
+      ],
+      "capturedAt": "2026-10-14T17:19:34.929472+00:00",
+      "profileVersion": 0,
+      "catalogStatus": "rejected",
+      "displayStatus": "notMatched",
+      "catalogColor": null,
+      "catalogHexSrgb": null,
+      "approved": false,
+      "provenance": "approximateReplay",
+      "instrumentDeltaE00": null,
+      "displayDriveRgb": null,
+      "physicalControlStatus": "unverified",
+      "approvalLimitations": [
+        "independentInstrumentValidationNotTested",
+        "cameraLocksUnverified"
+      ],
+      "sourceFrameProvenance": [],
+      "independentValidationStatus": "notTested",
+      "captureConditions": {
+        "geometry": null,
+        "background": "visible carpet; translucent appearance only",
+        "layers": null
+      }
+    }
+  ],
+  "currentPatch": null,
+  "paused": true,
+  "pauseReason": "awaiting_devices",
+  "diagnosticId": "test-88679bfd8d0e31528bd62a0f",
+  "diagnosticsEnabled": true,
+  "captures": [
+    {
+      "id": "fPt0bM-zKdlCnp_C5Eor75R7",
+      "captureId": "fPt0bM-zKdlCnp_C5Eor75R7",
+      "width": 1536,
+      "height": 1150,
+      "metadata": {
+        "colorSpace": "srgb",
+        "sourceColorSpace": "srgb",
+        "iccDescription": "sRGB",
+        "encoding": "encoded",
+        "iccApplied": true,
+        "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+        "assumed": false,
+        "exploratory": true,
+        "physicallyVerified": false,
+        "originalSha256": "ff8ba695559f82d5bf5ec5f9c714488444e4855d8f2a02291f39ab8a6d24d97d",
+        "width": 1536,
+        "height": 1150,
+        "orientation": 1,
+        "gamutPreserved": true,
+        "sha256": "ff8ba695559f82d5bf5ec5f9c714488444e4855d8f2a02291f39ab8a6d24d97d"
+      },
+      "originalRetained": false,
+      "retention": "ephemeral",
+      "provenance": "explicitUploadApproximateReplay"
+    }
+  ],
+  "neutralCheck": null,
+  "responseProfile": null,
+  "artifactPurpose": "imageReplayOnlyNotPhysicalValidation",
+  "humanAnnotationStatus": "pending",
+  "annotationSource": "AI draft, editable; pending human review"
+}

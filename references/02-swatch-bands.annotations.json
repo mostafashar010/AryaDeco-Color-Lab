@@ -1,0 +1,26 @@
+{
+  "image":"02-swatch-bands.jpg",
+  "sha256":"ae19fc687b927e4af8362add615a6667a14ff5106a628189937811318b92c2e2",
+  "annotationSource":"AI draft, editable; pending human review",
+  "humanConfirmed":false,
+  "colorGroundTruth":false,
+  "coordinateSpace":"normalized",
+  "excludedMeterPolygon":[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]],
+  "draftHorizontalBoundariesPx":[257,394,526,656,787,914,1042,1167,1298,1411,1518],
+  "limitations":["Boundaries approximate, not human ground truth", "Keep nearby colors separate", "Last bottom band is partial", "No physical color truth"],
+  "regions":[
+    {"id":"swatch-01","label":"AI interior 01","order":0,"mode":"bands","polygon":[[0.25,0.11],[0.77,0.11],[0.77,0.155],[0.25,0.155]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-02","label":"AI interior 02","order":1,"mode":"bands","polygon":[[0.25,0.183],[0.77,0.183],[0.77,0.240],[0.25,0.240]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-03","label":"AI interior 03","order":2,"mode":"bands","polygon":[[0.25,0.270],[0.77,0.270],[0.77,0.329],[0.25,0.329]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-04","label":"AI interior 04","order":3,"mode":"bands","polygon":[[0.25,0.358],[0.77,0.358],[0.77,0.407],[0.25,0.407]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-05","label":"AI interior 05","order":4,"mode":"bands","polygon":[[0.25,0.440],[0.77,0.440],[0.77,0.495],[0.25,0.495]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-06","label":"AI interior 06","order":5,"mode":"bands","polygon":[[0.25,0.527],[0.77,0.527],[0.77,0.576],[0.25,0.576]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-07","label":"AI interior 07","order":6,"mode":"bands","polygon":[[0.25,0.612],[0.77,0.612],[0.77,0.657],[0.25,0.657]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-08","label":"AI interior 08","order":7,"mode":"bands","polygon":[[0.25,0.694],[0.77,0.694],[0.77,0.742],[0.25,0.742]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-09","label":"AI interior 09","order":8,"mode":"bands","polygon":[[0.25,0.775],[0.77,0.775],[0.77,0.827],[0.25,0.827]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-10","label":"AI interior 10","order":9,"mode":"bands","polygon":[[0.25,0.860],[0.77,0.860],[0.77,0.901],[0.25,0.901]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false},
+    {"id":"swatch-11","label":"AI interior 11","order":10,"mode":"bands","polygon":[[0.25,0.938],[0.77,0.938],[0.77,0.976],[0.25,0.976]],"exclusions":[[[0.0347,0],[0.1887,0],[0.1887,1],[0.0347,1]]],"background":null,"layers":null,"direction":"horizontal","operatorConfirmed":false}
+  ],
+  "terminalPartialRegion":{"id":"swatch-terminal-partial","label":"Incomplete bottom fragment; not a complete sample","order":11,"polygon":[[0.25,0.99],[0.77,0.99],[0.77,1],[0.25,1]],"operatorConfirmed":false,"completeSample":false},
+  "foldBoundaryBands":{"coordinateSpace":"original-pixels","halfWidthPx":12,"centersPx":[257,394,526,656,787,914,1042,1167,1298,1411,1518],"excludedFromInteriorDrafts":true}
+}
