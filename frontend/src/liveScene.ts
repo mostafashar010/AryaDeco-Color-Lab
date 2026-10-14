@@ -83,7 +83,7 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
       const offset = (yy * image.width + x) * 4;
       const red = Number(image.data[offset]) / scale, green = Number(image.data[offset + 1]) / scale, blue = Number(image.data[offset + 2]) / scale;
       const low = Math.min(red, green, blue), high = Math.max(red, green, blue);
-      return high - low < .12 && low > .25 && high < .75;
+      return high - low < .18 && low > .22 && high < .78;
     };
     const radius = Math.ceil(Math.max(sx, estimatedPitch * 1.5));
     const lefts: number[] = [], rights: number[] = [];
@@ -105,7 +105,7 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
       if (cell < 2 || Math.abs(cell - estimatedPitch) > Math.max(sx, 1)) continue;
       const border = nativeRgb(left - 1, y), endBorder = nativeRgb(right, y);
       const borderDifference = Math.max(...border.map((value, channel) => Math.abs(value - endBorder[channel])));
-      if (borderDifference > .15) continue;
+      if (borderDifference > .25) continue;
       // A mixed end-border pixel localizes its edge to the pixel-center interval.
       // Use that observed half-pixel phase, never search phases by decoded bits.
       const sampleLeft = left - (borderDifference > .08 ? .5 : 0);
@@ -154,14 +154,14 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
           let edge = -1;
           for (let offset = 0; offset <= Math.ceil(cell); offset++) {
             const candidateY = yy + direction * offset;
-            if (rim(x, candidateY) && nativeRgb(x, candidateY).every((value, channel) => Math.abs(value - border[channel]) <= .15)) { edge = candidateY; break; }
+            if (rim(x, candidateY) && nativeRgb(x, candidateY).every((value, channel) => Math.abs(value - border[channel]) <= .18)) { edge = candidateY; break; }
           }
           if (edge < 0) return false;
           rows.push(edge);
         }
         // Observe a narrow near-linear border, allowing mild slant but not a
         // disconnected collection of gray pixels around a partial strip.
-        return Math.max(...rows) - Math.min(...rows) <= Math.ceil(cell) && rows.every((edge, index) => Math.abs(edge - (rows[0] + (rows[27] - rows[0]) * index / 27)) <= 1.5);
+        return Math.max(...rows) - Math.min(...rows) <= Math.ceil(cell) && rows.every((edge, index) => Math.abs(edge - (rows[0] + (rows[27] - rows[0]) * index / 27)) <= 1.8);
       };
       if (!closed(top - 1, -1) || !closed(bottom, 1)) { rejectMarker('markerBorderIncomplete'); continue; }
       const rect = { x: sampleLeft, y: top, width: right - left, height: bottom - top };
@@ -379,7 +379,7 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
           const thickness = horizontal(y, false);
           if (thickness > 0) { bottom = y; bottomThickness = thickness; break; }
         }
-        if (top > 0 && bottom - top >= mw * 0.25 && Math.max(...rim) - Math.min(...rim) < 0.035) {
+        if (top > 0 && bottom - top >= mw * 0.25 && Math.max(...rim) - Math.min(...rim) < 0.12) {
           let sides = 0, sideUncertainty = 0;
           const sideThickness: number[] = [];
           for (let i = 0; i < 16; i++) {
@@ -403,8 +403,8 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
           // Rim-connected content hides the inner edge. A nearby outer edge
           // is insufficient if its thickness disagrees with the other sides.
           const thickness = [topThickness, bottomThickness, ...sideThickness];
-          const coherentRim = (Math.max(...thickness) - Math.min(...thickness)) * Math.max(sx, sy) <= 2;
-          feedbackSafe = sides === 16 && coherentRim && sideUncertainty * Math.max(sx, sy) <= 2 && sideUncertainty <= Math.min(rect.width, bottom - top) * 0.01;
+          const coherentRim = (Math.max(...thickness) - Math.min(...thickness)) * Math.max(sx, sy) <= 5;
+          feedbackSafe = sides >= 12 && coherentRim && sideUncertainty * Math.max(sx, sy) <= 4 && sideUncertainty <= Math.min(rect.width, bottom - top) * 0.03;
           if (feedbackSafe) { rect.y = top; rect.height = bottom - top; }
         }
         patches.push({ rect, feedbackSafe });
@@ -417,7 +417,7 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
     for (let x = Math.min(width - 1, Math.floor(mx + mw * 0.25)); x >= Math.max(1, Math.floor(mx - mw * 0.1)); x--) if (sustainedSide(x, y)) { left = x; break; }
     for (let x = Math.max(1, Math.ceil(mx + mw * 0.75)); x < Math.min(width, mx + mw * 1.1); x++) if (sustainedSide(x, y)) { right = x; break; }
     if (left <= 0 || right >= width || right - left < mw * 0.6 || right - left > mw * 1.2) { finish(); continue; }
-    if (aperture && Math.abs(aperture.left - left) <= 2 && Math.abs(aperture.right - right) <= 2) {
+    if (aperture && Math.abs(aperture.left - left) <= 3 && Math.abs(aperture.right - right) <= 3) {
       // Intersect the side traces, rather than expanding into a tilted bezel.
       const x = Math.max(aperture.rect.x, left), end = Math.min(aperture.rect.x + aperture.rect.width, right);
       aperture.rect.x = x; aperture.rect.width = end - x; aperture.rect.height++;

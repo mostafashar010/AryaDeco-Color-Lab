@@ -69,7 +69,8 @@ export class LivePreviewPump {
   }
   heartbeat(sourceFrame: LivePreviewInput['sourceFrame'], streamId: string) {
     const now = performance.now();
-    if (this.stopped || now - this.lastDetectionAt < 2000 || now - this.lastHeartbeatAt < 1000 || sourceFrame.presentedFrames <= this.presented || sourceFrame.mediaTime < this.mediaTime) return;
+    const needsRescue = this.lastSuccessfulAt !== -Infinity && now - this.lastSuccessfulAt >= 3000;
+    if (this.stopped || (!needsRescue && now - this.lastDetectionAt < 2000) || now - this.lastHeartbeatAt < 1000 || sourceFrame.presentedFrames <= this.presented || sourceFrame.mediaTime < this.mediaTime) return;
     this.lastHeartbeatAt = now;
     // A fresh camera callback keeps only the locator alive, never an old color estimate.
     this.queue({ streamId, sourceFrame, bands: [{ id: 'locator', drive: [0.5, 0.5, 0.5], top: 0, bottom: 1 }], mapping: 'orderedPreview', warnings: ['orderedPreview', 'screenAlignmentUncertain', 'cameraControlsUnknown', 'uncalibratedPreview'] }, true);
