@@ -132,7 +132,7 @@ export function processTrackingFrame(request: TrackingRequest, previous: WorkerT
   const screen=regions.find(region=>region.id==='auto-display');
   const previewScreen=observedAperture??(screen?{...screen,polygon:screen.polygon.map(([x,y])=>[x/sx,y/sy] as Point),exclusions:screen.exclusions.map(p=>p.map(([x,y])=>[x/sx,y/sy] as Point))}:undefined);
   // Geometry can remain visible without a marker, but must never echo A as fabric.
-  const preview=request.purpose!=='response'&&phase==='scene'&&request.mode==='cameraMatch'&&recognizedScreen&&markerSequence!==undefined&&(request.expectedSequence===undefined||markerSequence===request.expectedSequence)?samplePreviewBands(image,fabric,previewScreen):null;
+  const preview=request.purpose!=='response'&&phase==='scene'&&request.mode==='cameraMatch'&&(recognizedScreen||observedMarker)&&(request.expectedSequence===undefined||markerSequence===undefined||markerSequence===request.expectedSequence)?samplePreviewBands(image,fabric,previewScreen):null;
   const samplingEvidence=previewScreen&&request.displayBands?inspectScreenBands(image,previewScreen,request.displayBands.bands):[];
   const rejectionReasons:PreviewRejectionReason[]=[];
   if(phase==='scene'&&request.mode==='cameraMatch'&&request.purpose!=='response'){
