@@ -56,12 +56,15 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
   };
    const kind = (x: number, y: number) => {
     const i = (y * width + x) * 3;
+    const lum = grid[i] * 0.2126 + grid[i + 1] * 0.7152 + grid[i + 2] * 0.0722;
     const low = Math.min(grid[i], grid[i + 1], grid[i + 2]), high = Math.max(grid[i], grid[i + 1], grid[i + 2]);
-     return high-low>0.1?-1:high<0.25?0:low>0.75?1:-1;
+    return high - low > 0.35 ? -1 : lum < 0.22 ? 0 : lum > 0.72 ? 1 : -1;
   };
   const softKind=(x:number,y:number)=>{
-    const i=(y*width+x)*3,low=Math.min(grid[i],grid[i+1],grid[i+2]),high=Math.max(grid[i],grid[i+1],grid[i+2]),mean=(grid[i]+grid[i+1]+grid[i+2])/3;
-    return high-low>.2?-1:mean<.35?0:mean>.65?1:-1;
+    const i=(y*width+x)*3;
+    const lum = grid[i] * 0.2126 + grid[i + 1] * 0.7152 + grid[i + 2] * 0.0722;
+    const low = Math.min(grid[i], grid[i + 1], grid[i + 2]), high = Math.max(grid[i], grid[i + 1], grid[i + 2]);
+    return high - low > 0.4 ? -1 : lum < 0.38 ? 0 : lum > 0.62 ? 1 : -1;
   };
   const markers: { rect: Rect; sequence: number }[] = [];
   evidence.markerSentinels=0;evidence.markerRejections={};
@@ -217,7 +220,7 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
          let top=y,bottom=y+1;
          while(top>0&&supported(top-1))top--;
          while(bottom<height&&supported(bottom))bottom++;
-         if(top===0||bottom===height||(bottom-top)*sy<4||bottom-top>markerWidth/3){rejectMarker('stripHeightSupport');continue;}
+          if(top===0||bottom===height||(bottom-top)*sy<2||bottom-top>markerWidth/3){rejectMarker('stripHeightSupport');continue;}
          const rect={x:start*sx,y:top*sy,width:markerWidth*sx,height:(bottom-top)*sy};
           try{if(decodeMarker(sampleMarker(image,rect,{purpose:'analysisGeometry'}))!==sequence){rejectMarker('nativeSequenceMismatch');continue;}}catch{rejectMarker('nativeCellAmbiguity');continue;}
          if(!markers.some(m=>Math.abs(m.rect.x-rect.x)<2&&Math.abs(m.rect.y-rect.y)<4)){markers.push({rect,sequence});if(markers.length>=32)break;}
@@ -225,12 +228,12 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
        }
       if (markers.some(m => Math.abs(m.rect.x / sx - a.x) < 2 && y * sy >= m.rect.y && y * sy < m.rect.y + m.rect.height)) continue;
       // Sentinel edges at native resolution avoid accumulating downsample rounding across 28 cells.
-      const nativeKind = (x: number) => {
-        const index = (Math.floor(y * sy) * image.width + x) * 4;
-        const values = [0, 1, 2].map(channel => Number(image.data[index + channel]) / scale);
-         if(Math.max(...values)-Math.min(...values)>.1)return -1;
-         return Math.max(...values)<.25?0:Math.min(...values)>.75?1:-1;
-      };
+       const nativeKind = (x: number) => {
+         const index = (Math.floor(y * sy) * image.width + x) * 4;
+         const values = [0, 1, 2].map(channel => Number(image.data[index + channel]) / scale);
+         if (Math.max(...values) - Math.min(...values) > .15) return -1;
+         return Math.max(...values) < .25 ? 0 : Math.min(...values) > .75 ? 1 : -1;
+       };
       const edge = (position: number, leftKind: number, rightKind: number) => {
         for (let x = Math.max(1, Math.floor(position * sx - sx - 1)); x <= Math.min(image.width - 1, Math.ceil(position * sx + sx + 1)); x++) if (nativeKind(x - 1) === leftKind && nativeKind(x) === rightKind) return x;
         return undefined;
@@ -448,11 +451,12 @@ export function detectLiveScene(image: PixelImage, expectedMarkerSequence?: numb
       }
     }
   }
+  result.marker = marker.rect;
   if (patches.length !== 1) {
     result.status = patches.length > 1 ? 'ambiguous' : 'needsFraming';
     result.nextAction = 'سطح رنگی بزرگ بالای نشانگر باید صاف، کامل و بدون زاویه یا بازتاب در قاب دیده شود.';
-     evidence.reason = 'displayApertureMissing';
-     if(options.purpose==='response'){result.responseWitness=selectResponseWitness(image,neutral);return result;}
+    evidence.reason = 'displayApertureMissing';
+    if(options.purpose==='response'){result.responseWitness=selectResponseWitness(image,neutral);return result;}
     const suspectScreen: [number, number][] = [[Math.max(0, marker.rect.x - marker.rect.width * 0.1), Math.max(0, marker.rect.y - marker.rect.width * 2.5)], [Math.min(image.width, marker.rect.x + marker.rect.width * 1.1), Math.max(0, marker.rect.y - marker.rect.width * 2.5)], [Math.min(image.width, marker.rect.x + marker.rect.width * 1.1), Math.min(image.height, marker.rect.y + marker.rect.height + 8 * sy)], [Math.max(0, marker.rect.x - marker.rect.width * 0.1), Math.min(image.height, marker.rect.y + marker.rect.height + 8 * sy)]];
     result.fabricRegions = detectSwatchLayout(image, [...cardExclusions, suspectScreen]).fabricRegions;
     return result;

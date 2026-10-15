@@ -245,7 +245,7 @@ export function detectSwatchLayout(image: PixelImage, exclusions: Point[][] = []
     let darkCandidate = false;
     if (!fullWidth) {
       const rowColors = [0.3, 0.5, 0.7].map(t => color(Math.floor((left + right) / 2), Math.floor(top.y + height * t))).filter((v): v is number[] => v !== undefined);
-      if (!rowColors.some(v => Math.max(...v) - Math.min(...v) >= 0.06) && (right - left) / height < 3) {
+      if (!rowColors.some(v => Math.max(...v) - Math.min(...v) >= 0.06) && (right - left) / height < 2.5) {
         let dark = 0, tested = 0;
         for (const t of [0.3, 0.5, 0.7]) for (let x = left + 6; x < right - 5; x += 6) {
           const y = Math.floor(top.y + height * t);
