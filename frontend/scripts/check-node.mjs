@@ -2,7 +2,8 @@
 // "require() of ES Module .../@exodus/bytes/encoding-lite.js ... not supported"
 // that jsdom's dependencies throw on Node < 22.12 (require(esm) is off by default there).
 const [major, minor] = process.versions.node.split('.').map(Number);
-const supported = major > 22 || (major === 22 && minor >= 12);
+const hasFlag = Boolean(process.env.NODE_OPTIONS && process.env.NODE_OPTIONS.includes('--experimental-require-module'));
+const supported = major > 22 || (major === 22 && minor >= 12) || (major === 22 && hasFlag);
 
 if (!supported) {
   console.error(
