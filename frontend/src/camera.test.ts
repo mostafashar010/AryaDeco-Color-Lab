@@ -24,6 +24,57 @@ describe('real rear camera and honest controls', () => {
   });
 });
 
+describe('auto exposure / white balance lock', () => {
+  const caps = { exposureMode: ['continuous', 'manual'], exposureTime: { min: 1, max: 1000 }, iso: { min: 50, max: 1600 }, whiteBalanceMode: ['continuous', 'manual'], colorTemperature: { min: 2000, max: 9000 } };
+  // A fake track whose applyConstraints really changes what getSettings reports, like a cooperative browser.
+  function setup(opts: { capabilities?: Record<string, unknown>; settings?: Record<string, unknown>; reflect?: boolean; reject?: string } = {}) {
+    const settings: Record<string, unknown> = opts.settings ?? { exposureMode: 'continuous', exposureTime: 120, iso: 200, whiteBalanceMode: 'continuous', colorTemperature: 4300 };
+    const applyConstraints = vi.fn(async (c: { advanced: Record<string, unknown>[] }) => {
+      if (opts.reject && opts.reject in c.advanced[0]) throw new Error('OverconstrainedError');
+      if (opts.reflect !== false) Object.assign(settings, c.advanced[0]);
+    });
+    const track = { getSettings: () => ({ ...settings }), getCapabilities: () => opts.capabilities ?? caps, stop: vi.fn(), addEventListener: vi.fn(), applyConstraints };
+    const pause = vi.fn();
+    const camera = new Camera({ getSupportedConstraints: () => ({}), getUserMedia: async () => ({ getVideoTracks: () => [track], getTracks: () => [track] }) } as never, pause);
+    return { camera, applyConstraints, pause };
+  }
+  it('pins exposure and white balance at their current values, verifies by read-back and never pauses the session', async () => {
+    const { camera, applyConstraints, pause } = setup();
+    await camera.start();
+    const before = camera.fingerprint();
+    const result = await camera.lockAuto();
+    expect(result).toMatchObject({ status: 'locked', applied: ['exposure', 'whiteBalance'], unverified: [], unsupported: [], failed: [] });
+    expect(applyConstraints.mock.calls.map(call => call[0].advanced[0])).toEqual([
+      { exposureMode: 'manual', exposureTime: 120, iso: 200 },
+      { whiteBalanceMode: 'manual', colorTemperature: 4300 },
+    ]);
+    expect(camera.report().controlStatus.manualLock).toBe('locked');
+    expect(camera.fingerprint()).not.toBe(before);
+    expect(pause).not.toHaveBeenCalled();
+    camera.stop(); expect(camera.report().controlStatus.manualLock).toBe('unknown');
+  });
+  it('does not lock a bare manual mode when the current numeric value is unknown, and says unsupported', async () => {
+    const { camera, applyConstraints } = setup({ settings: { exposureMode: 'continuous', whiteBalanceMode: 'continuous' } });
+    await camera.start();
+    expect(await camera.lockAuto()).toMatchObject({ status: 'unsupported', unsupported: ['exposure', 'whiteBalance'] });
+    expect(applyConstraints).not.toHaveBeenCalled();
+  });
+  it('never claims a lock the browser does not report back', async () => {
+    const { camera } = setup({ reflect: false });
+    await camera.start();
+    expect(await camera.lockAuto()).toMatchObject({ status: 'unverified', applied: [], unverified: ['exposure', 'whiteBalance'] });
+    expect(camera.report().controlStatus.manualLock).toBe('unverified');
+  });
+  it('keeps the other group when the browser rejects one', async () => {
+    const { camera } = setup({ reject: 'exposureMode' });
+    await camera.start();
+    expect(await camera.lockAuto()).toMatchObject({ status: 'partial', applied: ['whiteBalance'], failed: ['exposure'] });
+  });
+  it('requires an active camera', async () => {
+    await expect(new Camera({} as never, vi.fn()).lockAuto()).rejects.toThrow();
+  });
+});
+
 describe('verified float canvas and fresh frame collection', () => {
   it('checks returned colorSpace and actual float data rather than request alone', () => {
     const ctx = { getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(16), colorSpace: 'srgb' })) };

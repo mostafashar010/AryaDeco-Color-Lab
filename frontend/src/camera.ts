@@ -1,10 +1,14 @@
 import { bounds, type Frame, type Region, type sampleRegion } from './sampling';
 import { decodeMarker, sampleMarker, type PixelImage, type Rect } from './marker';
 
+export type AutoLockStatus = 'unknown' | 'locked' | 'partial' | 'unverified' | 'unsupported' | 'failed';
+export type AutoLockReport = { status: AutoLockStatus; applied: string[]; unverified: string[]; unsupported: string[]; failed: string[]; values: Record<string, number | string> };
+
 export class Camera {
   stream?: MediaStream;
   track?: MediaStreamTrack;
   private requested: Record<string, unknown> = {};
+  private lockStatus: AutoLockStatus = 'unknown';
   constructor(private media: MediaDevices, private pause: (reason: string) => void) {}
   async start(deviceId?: string) {
     this.stop();
@@ -22,8 +26,46 @@ export class Camera {
     try { await this.track.applyConstraints({ advanced: [values as MediaTrackConstraintSet] }); }
     finally { this.pause('camera_controls_changed'); }
   }
+  /**
+   * Best-effort lock of auto exposure and auto white balance at their CURRENT values, so the
+   * closed feedback loop is not chasing the camera's own adjustments (which also change
+   * fingerprint() and reset the loop). Call it once the scene is framed and exposure has
+   * settled, never right after start(). Unlike controls() it does not call pause(): run it
+   * before a measured session begins; fingerprint() reflects the locked state afterwards.
+   *
+   * A group is locked only when the browser reports the current numeric value (a bare
+   * "manual" mode would freeze an arbitrary default) and, to claim success, reports
+   * the manual mode back in getSettings(). Anything weaker is reported honestly.
+   */
+  async lockAuto(): Promise<AutoLockReport> {
+    const track = this.track;
+    if (!track) throw new Error('دوربین فعال نیست.');
+    const read = () => (track.getSettings?.() ?? {}) as Record<string, unknown>;
+    const caps = (track.getCapabilities?.() ?? {}) as Record<string, unknown>;
+    const before = read();
+    const canManual = (key: string) => Array.isArray(caps[key]) && (caps[key] as unknown[]).includes('manual');
+    const current = (key: string) => (caps[key] !== undefined && typeof before[key] === 'number' && Number.isFinite(before[key]) ? { [key]: before[key] as number } : undefined);
+    const exposureTime = current('exposureTime'), colorTemperature = current('colorTemperature');
+    const plan: { name: string; modeKey: string; values?: Record<string, number | string> }[] = [
+      { name: 'exposure', modeKey: 'exposureMode', values: canManual('exposureMode') && exposureTime ? { exposureMode: 'manual', ...exposureTime, ...current('iso') } : undefined },
+      { name: 'whiteBalance', modeKey: 'whiteBalanceMode', values: canManual('whiteBalanceMode') && colorTemperature ? { whiteBalanceMode: 'manual', ...colorTemperature } : undefined },
+    ];
+    const applied: string[] = [], unverified: string[] = [], unsupported: string[] = [], failed: string[] = [];
+    const values: Record<string, number | string> = {};
+    for (const step of plan) {
+      if (!step.values) { unsupported.push(step.name); continue; }
+      // One group per call: a browser that rejects one must not block the other.
+      try { await track.applyConstraints({ advanced: [step.values as MediaTrackConstraintSet] }); }
+      catch { failed.push(step.name); continue; }
+      Object.assign(values, step.values);
+      (read()[step.modeKey] === 'manual' ? applied : unverified).push(step.name);
+    }
+    this.requested = { ...this.requested, controls: { ...((this.requested.controls as Record<string, unknown> | undefined) ?? {}), ...values } };
+    this.lockStatus = applied.length === plan.length ? 'locked' : applied.length ? 'partial' : unverified.length ? 'unverified' : failed.length ? 'failed' : 'unsupported';
+    return { status: this.lockStatus, applied, unverified, unsupported, failed, values };
+  }
   report() {
-    return { browserSupported: true, supportedConstraints: this.media.getSupportedConstraints(), trackCapabilities: this.track?.getCapabilities?.() ?? {}, requested: this.requested, reportedSettings: this.track?.getSettings() ?? {}, controlStatus: { manualLock: 'unknown', wakeLock: 'unknown', reportedConstraints: this.track?.getConstraints?.() ?? {} }, deviceLabel: this.track?.label ?? '', capturePath: 'videoCanvas', canvasColorSpace: 'unknown', wakeLock: false };
+    return { browserSupported: true, supportedConstraints: this.media.getSupportedConstraints(), trackCapabilities: this.track?.getCapabilities?.() ?? {}, requested: this.requested, reportedSettings: this.track?.getSettings() ?? {}, controlStatus: { manualLock: this.lockStatus, wakeLock: 'unknown', reportedConstraints: this.track?.getConstraints?.() ?? {} }, deviceLabel: this.track?.label ?? '', capturePath: 'videoCanvas', canvasColorSpace: 'unknown', wakeLock: false };
   }
   fingerprint() {
     const text = JSON.stringify({ requested: this.requested, settings: this.track?.getSettings() ?? {} });
@@ -31,7 +73,7 @@ export class Camera {
     for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
     return `settings-fnv1a-${(hash >>> 0).toString(16)}-${text.length}`;
   }
-  stop() { this.stream?.getTracks().forEach(track => track.stop()); this.stream = undefined; this.track = undefined; }
+  stop() { this.stream?.getTracks().forEach(track => track.stop()); this.stream = undefined; this.track = undefined; this.lockStatus = 'unknown'; }
 }
 export function readCanvasPixels(ctx: CanvasRenderingContext2D, rect: Rect, colorSpace: 'srgb' | 'display-p3'): PixelImage {
   const result = ctx.getImageData(rect.x, rect.y, rect.width, rect.height, { colorSpace, pixelFormat: 'rgba-float16' });
