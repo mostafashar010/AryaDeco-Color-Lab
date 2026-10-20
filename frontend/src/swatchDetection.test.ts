@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as sampling from './sampling';
 import { execFileSync } from 'node:child_process';
+import { pythonBin } from './testPaths';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { bounds, contains, type Point } from './sampling';
@@ -90,7 +91,7 @@ describe('independent bounded swatch geometry', () => {
   });
   it('keeps the actual screenshot 14 cyan fold as uncertain geometry rather than several material IDs', () => {
     const fixture = JSON.parse(readFileSync('src/fixtures/live-screenshot-14.json', 'utf8'));
-    const data = new Uint8ClampedArray(execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image; import sys; sys.stdout.buffer.write(Image.open(sys.argv[1]).convert("RGBA").tobytes())', 'src/fixtures/live-screenshot-14.png'], { maxBuffer: 2_000_000 }));
+    const data = new Uint8ClampedArray(execFileSync(pythonBin(), ['-c', 'from PIL import Image; import sys; sys.stdout.buffer.write(Image.open(sys.argv[1]).convert("RGBA").tobytes())', 'src/fixtures/live-screenshot-14.png'], { maxBuffer: 2_000_000 }));
     expect(createHash('sha256').update(data).digest('hex')).toBe(fixture.pixelSha256);
     expect(fixture.humanConfirmed).toBe(false);
     expect(fixture.physicalBandCount).toBeNull();
@@ -189,7 +190,7 @@ describe('independent bounded swatch geometry', () => {
     const source = '../references/02-swatch-bands.jpg';
     expect(createHash('sha256').update(readFileSync(source)).digest('hex')).toBe('ae19fc687b927e4af8362add615a6667a14ff5106a628189937811318b92c2e2');
     // Pillow decodes original encoded pixels for geometry only; no calibrated color assertions.
-    const data = new Uint8ClampedArray(execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA"); im=im.resize((216,384)); sys.stdout.buffer.write(im.tobytes())', source]));
+    const data = new Uint8ClampedArray(execFileSync(pythonBin(), ['-c', 'from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA"); im=im.resize((216,384)); sys.stdout.buffer.write(im.tobytes())', source]));
     const result = detectSwatchLayout({ width: 216, height: 384, data }, [[[0, 0], [44, 0], [44, 384], [0, 384]]]);
     // Intentional boundary-vote and local-mask changes supersede the old output hash.
     // Keep source bytes frozen and require deterministic, ordered, bounded geometry instead.

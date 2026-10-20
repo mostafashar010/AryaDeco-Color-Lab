@@ -1,13 +1,19 @@
 """Diagnostic camera crops only; never overwrite reference images or infer XYZ."""
 import hashlib
 import json
+import os
+import sys
 from pathlib import Path
 
 from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parent
-SOURCE = Path('/home/betoche/Downloads/Telegram Desktop')
+# Folder holding the original private camera photos (never committed).
+_source_dir = os.environ.get('COLORLAB_REAL_PHOTO_DIR')
+SOURCE = Path(_source_dir) if _source_dir else None
+if SOURCE is None or not SOURCE.is_dir():
+    sys.exit('Set COLORLAB_REAL_PHOTO_DIR to the folder containing the original photo_2026-10-14_01-41-*.jpg files.')
 SHOTS = {
     '12': {'crop': [48, 560, 543, 1055], 'objects': [
         [[24, 121], [158, 121], [164, 398], [24, 399]],

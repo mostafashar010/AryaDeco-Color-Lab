@@ -3,6 +3,7 @@ import * as swatchDetection from './swatchDetection';
 import * as neutralCards from './neutralCards';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { pythonBin, realPhotoPath } from './testPaths';
 import { markerCells, decodeMarker, sampleMarker, type PixelImage, type Rect } from './marker';
 import * as markerDecoder from './marker';
 import { bounds, contains } from './sampling';
@@ -74,7 +75,7 @@ describe('automatic live scene geometry', () => {
   });
   it('bounds repeated decoding work per observed strip at 640 and 480 analysis pixels', () => {
     const source = borderedFractionalMarker(108, 315, 0, 2);
-    const data = new Uint8ClampedArray(execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image; import sys; im=Image.frombytes("RGBA",(640,640),sys.stdin.buffer.read()); sys.stdout.buffer.write(im.resize((480,480),Image.Resampling.BOX).tobytes())'], { input: source.data, maxBuffer: 1_000_000 }));
+    const data = new Uint8ClampedArray(execFileSync(pythonBin(), ['-c', 'from PIL import Image; import sys; im=Image.frombytes("RGBA",(640,640),sys.stdin.buffer.read()); sys.stdout.buffer.write(im.resize((480,480),Image.Resampling.BOX).tobytes())'], { input: source.data, maxBuffer: 1_000_000 }));
     const counts: number[] = [];
     for (const target of [source, { width: 480, height: 480, data }]) {
       const decode = vi.spyOn(markerDecoder, 'decodeMarker'), started = performance.now();
@@ -94,7 +95,7 @@ describe('automatic live scene geometry', () => {
   });
   it('decodes a 108px camera strip after an antialiased 640-to-480 analysis resize', () => {
     const source = borderedFractionalMarker(108, 315, 0, 2);
-    const data = new Uint8ClampedArray(execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image; import sys; im=Image.frombytes("RGBA",(640,640),sys.stdin.buffer.read()); sys.stdout.buffer.write(im.resize((480,480),Image.Resampling.BOX).tobytes())'], { input: source.data, maxBuffer: 1_000_000 }));
+    const data = new Uint8ClampedArray(execFileSync(pythonBin(), ['-c', 'from PIL import Image; import sys; im=Image.frombytes("RGBA",(640,640),sys.stdin.buffer.read()); sys.stdout.buffer.write(im.resize((480,480),Image.Resampling.BOX).tobytes())'], { input: source.data, maxBuffer: 1_000_000 }));
     const target = { width: 480, height: 480, data };
     const result = detectLiveScene(target, 315, { purpose: 'response' });
     expect(result.evidence.markerSequence, JSON.stringify(result.evidence)).toBe(315);
@@ -194,9 +195,12 @@ describe('automatic live scene geometry', () => {
     expect(result.apertureFeedbackSafe).toBe(true);
     expect(bounds(result.displayAperture!.polygon)).toEqual({ x: 25, y: 75, width: 166, height: 220 });
   });
+  // These three tests need the original (private, uncommitted) camera photos. They run only when
+  // COLORLAB_REAL_PHOTO_DIR points at a folder containing them; otherwise they are skipped, not failed.
+  const nativePhoto=(suffix:string)=>realPhotoPath(`photo_2026-10-14_${suffix==='55'?'07-21-55':`07-22-${suffix}`}.jpg`);
+  describe.skipIf(!['01','00','55'].every(s=>nativePhoto(s)))('native 07 camera photos (private files, set COLORLAB_REAL_PHOTO_DIR)',()=>{
   it.each([['01',294],['00',421],['55',563]] as const)('keeps native 07 screenshot %s camera pixels separate from UI and does not invent expected marker bits',(suffix,top)=>{
-    const timestamp=suffix==='55'?'07-21-55':`07-22-${suffix}`;
-    const data=new Uint8ClampedArray(execFileSync('../.venv/bin/python',['-c',`from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA").crop((48,${top},543,${top+495})); sys.stdout.buffer.write(im.tobytes())`,`/home/betoche/Downloads/Telegram Desktop/photo_2026-10-14_${timestamp}.jpg`],{maxBuffer:2_000_000}));
+    const data=new Uint8ClampedArray(execFileSync(pythonBin(),['-c',`from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA").crop((48,${top},543,${top+495})); sys.stdout.buffer.write(im.tobytes())`,nativePhoto(suffix)!],{maxBuffer:2_000_000}));
     const target={width:495,height:495,data};
     const result=detectLiveScene(target,undefined,{purpose:'response',requireReferenceIdentity:false});
     if(suffix!=='55'){
@@ -213,9 +217,10 @@ describe('automatic live scene geometry', () => {
     }
     expect(result.fabricRegions).toEqual([]);
   });
+  });
   it.each(['12', '14', '16'])('uses only the actual camera crop in screenshot %s and never admits UI or stale screen proof', suffix => {
     const fixture = JSON.parse(readFileSync(`src/fixtures/live-screenshot-${suffix}.json`, 'utf8'));
-    const data = new Uint8ClampedArray(execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image; import sys; sys.stdout.buffer.write(Image.open(sys.argv[1]).convert("RGBA").tobytes())', `src/fixtures/live-screenshot-${suffix}.png`], { maxBuffer: 2_000_000 }));
+    const data = new Uint8ClampedArray(execFileSync(pythonBin(), ['-c', 'from PIL import Image; import sys; sys.stdout.buffer.write(Image.open(sys.argv[1]).convert("RGBA").tobytes())', `src/fixtures/live-screenshot-${suffix}.png`], { maxBuffer: 2_000_000 }));
     const result = detectLiveScene({ width: fixture.size[0], height: fixture.size[1], data }, undefined, { requireReferenceIdentity: false, displayLayout: 'liveBands' });
     expect(fixture.humanConfirmed).toBe(false);
     expect(result.displayRegion).toBeUndefined();
@@ -266,7 +271,7 @@ describe('automatic live scene geometry', () => {
   });
   it('retains real-cloth geometry in a synthetic screenshot-like composite with actual photo card crops', () => {
     // Synthetic layout, not the unavailable raw screenshot or human-confirmed truth.
-    const target: PixelImage = { width: 640, height: 480, data: new Uint8ClampedArray(execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA").resize((640,480)); sys.stdout.buffer.write(im.tobytes())', '../references/02-swatch-bands.jpg'], { maxBuffer: 2_000_000 })) };
+    const target: PixelImage = { width: 640, height: 480, data: new Uint8ClampedArray(execFileSync(pythonBin(), ['-c', 'from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA").resize((640,480)); sys.stdout.buffer.write(im.tobytes())', '../references/02-swatch-bands.jpg'], { maxBuffer: 2_000_000 })) };
     const cards = JSON.parse(readFileSync('src/fixtures/neutral-cards-real.json', 'utf8'));
     const pixels = Buffer.from(cards.rgbaBase64, 'base64');
     const centers = [[140, 60], [140, 155], [148, 246]];
@@ -406,7 +411,7 @@ describe('automatic live scene geometry', () => {
 
   it('retains a bounded aperture when camera blur spreads border contrast over several pixels', () => {
     const target = image(); const { screen } = display(target, 7);
-    const rgba = execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image,ImageFilter; import sys; im=Image.frombytes("RGBA",(640,480),sys.stdin.buffer.read()); sys.stdout.buffer.write(im.filter(ImageFilter.GaussianBlur(4)).tobytes())'], { input: target.data, maxBuffer: 2_000_000 });
+    const rgba = execFileSync(pythonBin(), ['-c', 'from PIL import Image,ImageFilter; import sys; im=Image.frombytes("RGBA",(640,480),sys.stdin.buffer.read()); sys.stdout.buffer.write(im.filter(ImageFilter.GaussianBlur(4)).tobytes())'], { input: target.data, maxBuffer: 2_000_000 });
     target.data.set(rgba);
     markerCells(7).forEach((bit, index) => paint(target, { x: 310 + index * 10, y: 300, width: 10, height: 20 }, bit ? [250, 250, 250] : [5, 5, 5]));
     const result = detectLiveScene(target, 7, { purpose: 'response' });
@@ -471,7 +476,7 @@ describe('automatic live scene geometry', () => {
   it('retains full screen edges through JPEG ringing over a smooth gradient', () => {
     const target = image(); const { screen } = display(target, 7);
     for (let y = screen.y; y < screen.y + screen.height; y++) for (let x = screen.x; x < screen.x + screen.width; x++) paint(target, { x, y, width: 1, height: 1 }, [93 + Math.floor((x - screen.x) / 8), 137 + Math.floor((y - screen.y) / 5), 167]);
-    target.data.set(execFileSync('../.venv/bin/python', ['-c', 'from PIL import Image; import sys,io; im=Image.frombytes("RGBA",(640,480),sys.stdin.buffer.read()).convert("RGB"); b=io.BytesIO(); im.save(b,"JPEG",quality=55); b.seek(0); sys.stdout.buffer.write(Image.open(b).convert("RGBA").tobytes())'], { input: target.data, maxBuffer: 2_000_000 }));
+    target.data.set(execFileSync(pythonBin(), ['-c', 'from PIL import Image; import sys,io; im=Image.frombytes("RGBA",(640,480),sys.stdin.buffer.read()).convert("RGB"); b=io.BytesIO(); im.save(b,"JPEG",quality=55); b.seek(0); sys.stdout.buffer.write(Image.open(b).convert("RGBA").tobytes())'], { input: target.data, maxBuffer: 2_000_000 }));
     const result = detectLiveScene(target, 7);
     expect(result.marker).toBeDefined();
     expect(result.displayRegion, JSON.stringify(result.evidence)).toBeDefined();

@@ -3,6 +3,7 @@ import {responseCardRegions, selectResponseWitness} from './responseTracking';
 import type {Region} from './sampling';
 import {detectNeutralCards} from './neutralCards';
 import {execFileSync} from 'node:child_process';
+import {pythonBin, realPhotoPath} from './testPaths';
 
 function witnessScene(two = false) {
   const width=400,height=300,data=new Uint8ClampedArray(width*height*4);
@@ -33,8 +34,10 @@ describe('experimental response witness geometry serialization',()=>{
     const proposals={status:'needsFraming' as const,cards:[],nextAction:'',evidence:{referenceValues:'unknown' as const,physicalStandardVerified:false as const,method:'boundedColorComponentsOrientedGeometry' as const,candidateCount:1,analysisWidth:400,analysisHeight:300,limitations:[],candidateGeometry:[{polygon:screen.polygon,label:'screen',observedBrightness:.5}]}};
     expect(selectResponseWitness(witnessScene().image,proposals,screen).rejections.screenOverlap).toBe(1);
   });
-  it('finds the actual single gray proposal in the native 07-22-01 camera crop but never authorizes an AWAIT screen',()=>{
-    const data=new Uint8ClampedArray(execFileSync('../.venv/bin/python',['-c','from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA").crop((48,294,543,789)); sys.stdout.buffer.write(im.tobytes())','/home/betoche/Downloads/Telegram Desktop/photo_2026-10-14_07-22-01.jpg'],{maxBuffer:2_000_000}));
+  // Needs the private, uncommitted original photo: runs only when COLORLAB_REAL_PHOTO_DIR contains it, otherwise skipped.
+  const nativePhoto=realPhotoPath('photo_2026-10-14_07-22-01.jpg');
+  it.skipIf(!nativePhoto)('finds the actual single gray proposal in the native 07-22-01 camera crop but never authorizes an AWAIT screen',()=>{
+    const data=new Uint8ClampedArray(execFileSync(pythonBin(),['-c','from PIL import Image; import sys; im=Image.open(sys.argv[1]).convert("RGBA").crop((48,294,543,789)); sys.stdout.buffer.write(im.tobytes())',nativePhoto!],{maxBuffer:2_000_000}));
     const image={width:495,height:495,data},cards=detectNeutralCards(image);
     const chosen=selectResponseWitness(image,cards,{...witnessScene().screen,polygon:[[58,94],[210,94],[210,410],[58,410]]});
     expect(chosen.status).toBe('selected');
