@@ -270,6 +270,84 @@ def test_constant_screen_response_reports_plateau_instead_of_success():
     assert result["residualAfter"] is None
 
 
+def test_error_within_camera_noise_holds_drive_and_never_reports_plateau():
+    from colorlab.engine import _linear
+    from colorlab.preview_feedback import correct_band
+    drive, previous = [.5, .4, .6], None
+    seen = np.array([.46, .5, .55])
+    observed, target = _linear(seen), _linear(seen + 1 / 255)  # one camera code value apart
+    for _ in range(6):
+        result = correct_band(drive, target, observed, previous=previous)
+        assert result["drive"] == drive
+        assert result["stalledIterations"] == 0
+        assert "withinCameraNoiseDeadband" in result["warnings"]
+        assert "previewFeedbackPlateau" not in result["warnings"]
+        previous = result
+
+
+def test_error_just_outside_camera_noise_still_corrects_with_bounded_steps():
+    from colorlab.engine import _linear
+    from colorlab.preview_feedback import correct_band
+    seen = np.array([.46, .5, .55])
+    result = correct_band([.5, .4, .6], _linear(seen + 4 / 255), _linear(seen))
+    step = np.asarray(result["drive"]) - [.5, .4, .6]
+    assert "withinCameraNoiseDeadband" not in result["warnings"]
+    assert np.all(step > 0) and np.max(step) <= .08000001
+
+
+def test_same_linear_error_is_camera_noise_at_mid_gray_but_real_near_black():
+    from colorlab.engine import _linear
+    from colorlab.preview_feedback import correct_band
+    mid, black, error = _linear([.5] * 3), _linear([.02] * 3), .003
+    assert "withinCameraNoiseDeadband" in correct_band([.5] * 3, mid + error, mid)["warnings"]
+    assert "withinCameraNoiseDeadband" not in correct_band([.02] * 3, black + error, black)["warnings"]
+
+
+def test_one_channel_outside_camera_noise_is_enough_to_correct():
+    from colorlab.engine import _linear
+    from colorlab.preview_feedback import correct_band
+    seen = np.array([.46, .5, .55])
+    result = correct_band([.5, .4, .6], _linear(seen + [0, 0, 5 / 255]), _linear(seen))
+    assert "withinCameraNoiseDeadband" not in result["warnings"]
+    assert result["drive"] != [.5, .4, .6]
+
+
+def _noisy_loop(deadband_codes, seed, noise_codes, iterations=40):
+    from colorlab.engine import _linear, _encoded
+    from colorlab.preview_feedback import correct_band
+    response = lambda d: np.asarray(d) ** 2.2
+    target, rng = response([.35, .42, .47]), np.random.default_rng(seed)
+    drive, previous, history, held = np.array([.4] * 3), None, [], 0
+    for _ in range(iterations):
+        seen = _encoded(response(drive)) + rng.integers(-noise_codes, noise_codes + 1, 3) / 255
+        result = correct_band(drive, target, _linear(np.clip(seen, 0, 1)), previous=previous, deadband_codes=deadband_codes)
+        held += "withinCameraNoiseDeadband" in result["warnings"]
+        drive, previous = np.asarray(result["drive"]), result
+        history.append(drive)
+    return {"movement": float(np.abs(np.diff(np.array(history)[-15:], axis=0)).sum()), "held": held,
+            "drive": drive, "response": response, "target": target}
+
+
+@pytest.mark.parametrize("seed", [1, 2, 3])
+def test_deadband_stops_the_drive_chasing_one_code_camera_noise(seed):
+    old = _noisy_loop(0, seed, 1)  # deadband off: the previous behavior
+    new = _noisy_loop(2, seed, 1)
+    assert old["movement"] > .02  # the scenario really does make the old loop wander
+    assert new["movement"] < old["movement"] / 10
+    assert new["held"] >= 20
+
+
+def test_deadband_still_converges_and_its_precision_floor_is_two_camera_codes():
+    from colorlab.preview_feedback import NOISE_DEADBAND_CODES, _noise_tolerance
+    run = _noisy_loop(NOISE_DEADBAND_CODES, 1, 0)  # no camera noise at all
+    response, target, drive = run["response"], run["target"], run["drive"]
+    start = np.linalg.norm(response([.4] * 3) - target)
+    assert np.linalg.norm(response(drive) - target) < start / 5
+    # It stops improving once every channel is within the deadband: that is the cost of the feature.
+    assert np.all(np.abs(target - response(drive)) <= _noise_tolerance(response(drive), NOISE_DEADBAND_CODES) * 1.0001)
+    assert NOISE_DEADBAND_CODES == 2
+
+
 def test_response_jacobian_is_used_only_within_measured_drive_coverage():
     from colorlab.display_response import characterize, response_steps
     from colorlab.preview_feedback import correct_band

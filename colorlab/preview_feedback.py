@@ -2,10 +2,31 @@
 import numpy as np
 from scipy.spatial import Delaunay
 
-from .engine import MATRICES, _linear
+from .engine import MATRICES, _encoded, _linear
+
+# The camera path is 8-bit encoded video. When every channel of the observed band is within
+# this many code values of its target, the difference cannot be told apart from quantization
+# and sensor noise, and moving the display drive for it only makes the preview jitter. It is
+# the same 2/255 that the live-preview endpoint already uses to decide that a re-sent target
+# is unchanged. Nominal, not a measured sensor noise floor.
+NOISE_DEADBAND_CODES = 2
 
 
-def correct_band(drive, target, observed, profile=None, previous=None):
+def _noise_tolerance(observed, codes):
+    """Per-channel linear-light half-width of `codes` 8-bit code values around `observed`.
+
+    Level aware by construction: one code is a few 1e-4 near black and several 1e-3 in the
+    mid-tones, so a fixed linear threshold would either hide real near-black error or let
+    mid-tone noise through.
+    """
+    if codes <= 0:
+        return np.zeros(3)
+    encoded = _encoded(observed)
+    step = codes / 255
+    return (_linear(np.clip(encoded + step, 0, 1)) - _linear(np.clip(encoded - step, 0, 1))) / 2
+
+
+def correct_band(drive, target, observed, profile=None, previous=None, *, deadband_codes=NOISE_DEADBAND_CODES):
     drive, target, observed = map(lambda value: np.asarray(value, dtype=float), (drive, target, observed))
     error = target - observed
     residual = float(np.linalg.norm(error))
@@ -13,8 +34,10 @@ def correct_band(drive, target, observed, profile=None, previous=None):
     noise_floor = np.sqrt(3) / (2 * 255 * 12.92)
     previous_residual = previous.get("residualBefore", residual) if previous else residual
     progress_threshold = max(1e-12, .01 * previous_residual)
+    # Within camera noise on every channel: hold the drive, and never call that a plateau.
+    within_noise = bool(np.all(np.abs(error) <= _noise_tolerance(observed, deadband_codes)))
     stalled = (previous.get("stalledIterations", 0) + 1 if previous and residual > noise_floor
-               and previous_residual - residual < progress_threshold else 0)
+               and previous_residual - residual < progress_threshold and not within_noise else 0)
     method = "nominalTransferDampedFeedback"
     supported = bool(profile and profile.get("validProfile")
                      and Delaunay(profile["trainingDrives"]).find_simplex(drive, tol=1e-8) >= 0)
@@ -35,11 +58,14 @@ def correct_band(drive, target, observed, profile=None, previous=None):
     damping = .5 / (1 + min(stalled, 4))
     proposed = drive + np.clip(damping * delta, -.08, .08)
     bounded = np.clip(proposed, 0, 1)
-    return {"drive": bounded.tolist(), "status": "measuredFeedbackExperimental", "method": method,
+    # `saturated` keeps describing the unconstrained proposal, as before the deadband existed.
+    held = np.clip(drive, 0, 1) if within_noise else bounded
+    return {"drive": held.tolist(), "status": "measuredFeedbackExperimental", "method": method,
             "residualBefore": residual, "residualAfter": None, "stalledIterations": stalled,
             "saturated": bool(np.any(proposed != bounded)), "physicalAccuracyVerified": False,
             "warnings": (["displayDriveSaturated"] if np.any(proposed != bounded) else [])
                         + (["previewFeedbackPlateau"] if stalled >= 3 else [])
+                        + (["withinCameraNoiseDeadband"] if within_noise else [])
                         + (["response_out_of_support"] if profile and not supported else [])}
 
 
