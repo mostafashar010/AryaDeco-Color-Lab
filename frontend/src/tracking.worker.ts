@@ -6,12 +6,13 @@ import type { Mode } from './session';
 import { computeTracking, type DisplayBandContext, type PreviewRejectionReason,type TrackingFrame, type TrackingPhase, type TrackingState } from './liveTracking';
 import {samplePreviewBands,inspectScreenBands} from './previewSampling';
 import{responseCardRegions}from'./responseTracking';
+import { holdAnchor, MAX_APERTURE_HOLD_FRAMES, type DisplayAnchor } from './apertureAnchor';
 
 export type TrackingRequest = { id: number; generation: number; phase: TrackingPhase; expectedSequence?: number;displayBands?:DisplayBandContext; mode?: Mode;purpose?:'response'; image: { width: number; height: number; data: Uint8ClampedArray }; frame: TrackingFrame };
 export type TrackingResponse = { id: number; generation: number; frame: TrackingFrame; tracking?: TrackingState['tracking']; error?: string };
 type Fingerprint = { values: Float32Array; mask: Uint8Array; width: number; height: number; analysisWidth: number; analysisHeight: number; phase: TrackingPhase };
 type Appearance = { id: string; polygon: Point[]; exclusions:Point[][];descriptor: Float32Array };
-export type WorkerTrackingState = { generation: number; mode?: Mode;purpose?:'response'; tracking: TrackingState; fingerprint: Fingerprint; appearance: Appearance[];displayAnchor?:{aperture:Region;region:Region;marker:Rect} };
+export type WorkerTrackingState = { generation: number; mode?: Mode;purpose?:'response'; tracking: TrackingState; fingerprint: Fingerprint; appearance: Appearance[];displayAnchor?:DisplayAnchor };
 
 // Only geometry leaves this worker. The small luminance fingerprint is ephemeral.
 export function processTrackingFrame(request: TrackingRequest, previous: WorkerTrackingState | null): WorkerTrackingState {
@@ -44,15 +45,29 @@ export function processTrackingFrame(request: TrackingRequest, previous: WorkerT
     const scene = detectLiveScene(image, request.expectedSequence, { requireReferenceIdentity: request.mode !== 'cameraMatch', ...(request.purpose==='response'?{purpose:'response' as const}:request.mode==='cameraMatch'?{displayLayout:'liveBands' as const}:{}) });
     const anchor=previous?.displayAnchor;
     const compatibleAnchor=anchor&&previous.mode===request.mode&&previous.purpose===request.purpose&&previous.fingerprint.width===frame.width&&previous.fingerprint.height===frame.height&&previous.fingerprint.analysisWidth===image.width&&previous.fingerprint.analysisHeight===image.height;
+    // A proven aperture may be carried through a few frames in which reflection or glare keeps the
+    // current frame from re-proving it, but only while the expected marker has not moved at all.
+    // Motion (below) still clears it, and the sampling gates still judge the actual pixels.
+    const holdThroughGlare=()=>{
+      const held=holdAnchor(compatibleAnchor?anchor:undefined,scene.marker);
+      if(!held)return;
+      displayAnchor=held;
+      scene.displayAperture={...held.aperture,source:'autoDetected',confidence:.6};
+      scene.displayRegion={...held.region,source:'autoDetected',confidence:.6};
+      scene.apertureFeedbackSafe=true;
+      if(scene.fabricRegions.length)scene.status='ready';
+      scene.nextAction=`بازتاب یا نور محیط لبهٔ صفحهٔ A را موقتاً پوشانده؛ هندسهٔ قبلاً تأییدشده نگه داشته شد (فریم ${held.heldFrames} از ${MAX_APERTURE_HOLD_FRAMES}). قاب را ثابت نگه دارید یا نور مستقیم را کم کنید.`;
+    };
     if(request.mode==='cameraMatch'&&request.purpose!=='response'&&scene.marker&&scene.displayRegion&&scene.displayAperture){
       const m=scene.marker;
       const sameMarker=compatibleAnchor&&Math.max(Math.abs(m.x-anchor.marker.x),Math.abs(m.y-anchor.marker.y),Math.abs(m.width-anchor.marker.width),Math.abs(m.height-anchor.marker.height))<=1;
       const candidate=bounds(scene.displayAperture.polygon),old=anchor?bounds(anchor.aperture.polygon):null;
       const sameFootprint=sameMarker&&old&&Math.abs(candidate.x-old.x)<=2&&Math.abs(candidate.width-old.width)<=2&&candidate.y>=old.y-2&&candidate.y+candidate.height<=old.y+old.height+2;
       if(sameFootprint){
-        displayAnchor=anchor;scene.displayAperture={...scene.displayAperture,polygon:anchor.aperture.polygon};scene.displayRegion={...scene.displayRegion,polygon:anchor.region.polygon};scene.apertureFeedbackSafe=true;
+        displayAnchor={aperture:anchor.aperture,region:anchor.region,marker:anchor.marker};scene.displayAperture={...scene.displayAperture,polygon:anchor.aperture.polygon};scene.displayRegion={...scene.displayRegion,polygon:anchor.region.polygon};scene.apertureFeedbackSafe=true;
       }else if(scene.apertureFeedbackSafe){displayAnchor={aperture:scene.displayAperture,region:scene.displayRegion,marker:m};}
-    }
+      else holdThroughGlare();
+    }else if(request.mode==='cameraMatch'&&request.purpose!=='response'&&scene.marker)holdThroughGlare();
     status = scene.status; nextAction = scene.nextAction;
     fabricCount = scene.fabricRegions.length; neutralCount = scene.neutralCandidates.length;
     markerCandidates = scene.evidence.markerCandidates; markerSequence = scene.evidence.markerSequence;
